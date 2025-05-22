@@ -9,11 +9,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.bluetoothgattserver.Secondactivity.SecondActivitySend
 import com.example.bluetoothgattserver.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 
@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestBluetoothPermissions()
+        initViews()
     }
     private fun initViews(){
         adapterRecycl = connectedDevices{device, isChecked ->
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
         }
     }
     private fun startSecondActivity(){
-        val navigate =  Intent(this,SecondActivitySend::class.java)
+        val navigate =  Intent(this, SecondActivitySend::class.java)
         startActivity(navigate)
     }
 

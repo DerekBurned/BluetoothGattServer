@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Gatt Server</string>
-    <string name="connected_devices_text_view">Bounded devices</string>
+    <string name="connected_devices_text_view">Connected devices</string>
     <string name="devices_found_text_view">Devices found</string>
     <string name="input_data_to_selected_button">Input data to selected</string>
     <string name="connect_to_selected_btn">Connect to selected</string>

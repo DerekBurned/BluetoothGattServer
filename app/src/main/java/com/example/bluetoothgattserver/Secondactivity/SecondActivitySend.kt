@@ -17,9 +17,9 @@ class SecondActivitySend : AppCompatActivity() {
     private lateinit var binding:ActivitySecondSendBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivitySecondSendBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        initViews()
         sharedDevicesViewModel.connectedDevices.observe(this){
             devices ->
 

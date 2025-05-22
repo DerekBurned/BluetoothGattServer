@@ -1,6 +1,7 @@
 package com.example.bluetoothgattserver
 
 import BluetoothServerController.GattServerController
+import BluetoothServerController.GattServerManager
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
@@ -10,22 +11,28 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.animation.AnimationUtils
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import com.example.bluetoothgattserver.Secondactivity.SecondActivitySend
 import com.example.bluetoothgattserver.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @SuppressLint("MissingPermission")
 class MainActivity : AppCompatActivity(), GattServerController.GattServerListener {
     private lateinit var adapterRecycl:connectedDevices
     private lateinit var binding:ActivityMainBinding
-    private lateinit var gattServerController: GattServerController
     private var _connectedDevices = mutableListOf<BluetoothDevice>()
-    companion object
-    {var connectedDevices = mutableListOf<BluetoothDevice>() }
     private final val PERMISSION_REQUEST_CODE = 123
+   private val sharedDevicesViewModel: SharedDevicesViewModel by viewModels(
+
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -57,26 +64,30 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
             startSecondActivity()
         }
     }
-    private fun initBtController(){
-        gattServerController = GattServerController(this).apply {
-            setListener(this@MainActivity)
+    private fun initBtController() {
+        GattServerManager.initialize(this)
+        val controller = GattServerManager.getController() ?: return
+        controller.setListener(this)
 
-            if (!startServer()) {
-                Log.d("Gatt server", "Server is not started")
-                finish()
-            }
+        if (!controller.startServer()) {
+            Log.d("Gatt server", "Server is not started")
+            finish()
         }
     }
+
     private fun startSecondActivity(){
-        val navigate =  Intent(this, SecondActivitySend::class.java)
-        startActivity(navigate)
-    }
+        val navigate = Intent(this, SecondActivitySend::class.java)
+       GlobalScope.launch(Dispatchers.Main) {
+           delay(1000)
+           startActivity(navigate)
+       }    }
 
 
     override fun onDeviceConnected(device: BluetoothDevice) {
         runOnUiThread {
             if(!_connectedDevices.contains(device)){
                 _connectedDevices.add(device)
+                sharedDevicesViewModel.updateDevices(_connectedDevices)
                 adapterRecycl.notifyItemInserted(_connectedDevices.size-1)
 
             }
@@ -91,6 +102,7 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
             val index = _connectedDevices.indexOfFirst { it.address == device.address }
             if (index != -1) {
                 _connectedDevices.removeAt(index)
+                sharedDevicesViewModel.updateDevices(_connectedDevices)
                 adapterRecycl.notifyItemRemoved(index)
             }
         }
@@ -113,7 +125,7 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
     }
     override fun onDestroy() {
         super.onDestroy()
-        gattServerController.stopServer()
+            GattServerManager.stopServer()
     }
     private fun hasAllPermissions(): Boolean {
         val permissions = arrayOf(

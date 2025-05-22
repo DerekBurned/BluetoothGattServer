@@ -1,4 +1,3 @@
-/*
 package com.example.bluetoothgattserver.Secondactivity
 
 import android.annotation.SuppressLint
@@ -10,10 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.bluetoothgattserver.connectedDevices
 import com.example.bluetoothgattserver.connectedDevices.DeviceViewHolder
 import com.example.bluetoothgattserver.databinding.DiscoveredDedviceItemBinding
-
+////Ciśniomierz 3 (Sys.(ciśnienie skurczowe)   dia.(Ciśnienie rozkurczowe) pul.(tętno) (int) )
+//, termometr 1 (temp (double)), glukometr 1 ((double) stęrzenie glukosy we krwi (mg/dL)/(mmol/L) )
+//, pulsoksymetr 2((double)% saturacja tlenu(SpO2) (int)tętno (pul.))
 class AdapterSecondActvity(
     private val onDeviceCheck: (BluetoothDevice, Boolean) -> Unit)
-    : ListAdapter<BluetoothDevice, DeviceViewHolder>(DeviceDiffCallback()) {
+    : ListAdapter<BluetoothDevice, DeviceViewHolder>(DeviceDiffCallBackSecondActivity()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -22,9 +23,11 @@ class AdapterSecondActvity(
         TODO("Not yet implemented")
     }
 
-    override fun onBindViewHolder(holder: DeviceViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: connectedDevices.DeviceViewHolder, position: Int) {
         TODO("Not yet implemented")
     }
+
+
 
 
     inner class DeviceViewHolder(private val binding: DiscoveredDedviceItemBinding) :
@@ -45,7 +48,7 @@ class AdapterSecondActvity(
     }
 
 
-    class DeviceDiffCallBack : DiffUtil.ItemCallback<BluetoothDevice>(){
+    class DeviceDiffCallBackSecondActivity : DiffUtil.ItemCallback<BluetoothDevice>(){
         override fun areItemsTheSame(oldItem: BluetoothDevice, newItem: BluetoothDevice): Boolean {
             return oldItem.address == newItem.address
         }
@@ -59,4 +62,4 @@ class AdapterSecondActvity(
     }
 
 
-}*/
+}

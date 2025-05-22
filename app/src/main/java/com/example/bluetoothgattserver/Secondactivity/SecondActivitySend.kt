@@ -2,6 +2,7 @@ package com.example.bluetoothgattserver.Secondactivity
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.withStyledAttributes
 import androidx.lifecycle.ViewModelProvider
@@ -10,8 +11,7 @@ import com.example.bluetoothgattserver.SharedDevicesViewModel
 import com.example.bluetoothgattserver.databinding.ActivitySecondSendBinding
 
 class SecondActivitySend : AppCompatActivity() {
-    private lateinit var sharedDevicesViewModel: SharedDevicesViewModel
-/*
+    private val sharedDevicesViewModel: SharedDevicesViewModel by viewModels()/*
     private lateinit var adapterSecondActivity:AdapterSecondActvity
 */
     private lateinit var binding:ActivitySecondSendBinding
@@ -20,9 +20,6 @@ class SecondActivitySend : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivitySecondSendBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sharedDevicesViewModel = ViewModelProvider(
-            applicationContext as ViewModelStoreOwner
-        )[SharedDevicesViewModel::class.java]
         sharedDevicesViewModel.connectedDevices.observe(this){
             devices ->
 

@@ -33,6 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textAlignment="center"
             android:gravity="center_vertical"
             android:text="@string/connected_devices_text_view"
             android:textColor="@android:color/white"
@@ -41,8 +42,8 @@
 
         <ImageButton
             android:id="@+id/imageStartServer"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/connect"
             app:srcCompat="@drawable/bluetooth_24dp_1f1f1f_fill0_wght400_grad0_opsz24"

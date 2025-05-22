@@ -9,4 +9,5 @@
     <string name="button_send_info">Send info</string>
     <string name="example_hint">Enter ...</string>
     <string name="connected_device">Connected Device</string>
+    <string name="title_send_info">Enter Info</string>
 </resources>

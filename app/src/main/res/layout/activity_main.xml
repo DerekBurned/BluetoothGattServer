@@ -32,7 +32,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="25dp"
                 android:gravity="center"
-                android:text="@string/connected_devices_text_view"
+                android:text="@string/connected_device"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="20sp" />

@@ -8,4 +8,5 @@
     <string name="discovery">discovery</string>
     <string name="button_send_info">Send info</string>
     <string name="example_hint">Enter ...</string>
+    <string name="connected_device">Connected Device</string>
 </resources>

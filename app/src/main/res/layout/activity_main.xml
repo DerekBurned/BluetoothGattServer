@@ -5,12 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="366dp" />
+
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
@@ -61,7 +56,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonInputData"
+        app:layout_constraintBottom_toTopOf="@+id/buttonSend"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardView"
@@ -69,81 +64,18 @@
         tools:itemCount="6"
         tools:listitem="@layout/discovered_dedvice_item"/>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView2"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_margin="16dp"
-        android:padding="20dp"
-        android:foregroundGravity="center"
-        android:textAlignment="center"
-        app:cardBackgroundColor="@android:color/holo_blue_dark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/devices_found_text_view"
-                android:textColor="@color/black"
-                android:textAlignment="center"
-                android:layout_marginEnd="25dp"
-                android:textSize="20sp" />
-
-            <ImageButton
-                android:contentDescription="@string/discovery"
-                android:id="@+id/imageButton2"
-                android:layout_width="wrap_content"
-                android:background="@android:color/darker_gray"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/bluetooth_24dp_1f1f1f_fill0_wght400_grad0_opsz24" />
-
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewItemsFound"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonConnect"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardView2"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:itemCount="6"
-        tools:listitem="@layout/discovered_dedvice_item" />
-
-
     <Button
-        android:id="@+id/buttonInputData"
-        android:layout_width="0dp"
+        android:id="@+id/buttonSend"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/input_data_to_selected_button"
-        android:layout_margin="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recyclerViewItemsConnectedOrSaved"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/cardView2"
-        />
-
-    <Button
-        android:id="@+id/buttonConnect"
-        android:layout_width="0dp"
-        android:layout_margin="16dp"
-        android:layout_height="wrap_content"
-        android:text="@string/connectt_to_selected_btn"
+        android:text="@string/connect_to_selected_btn"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="25sp"
+        android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerViewItemsFound" />
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

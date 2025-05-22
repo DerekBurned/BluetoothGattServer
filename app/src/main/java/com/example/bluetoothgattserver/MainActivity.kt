@@ -9,6 +9,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
@@ -49,6 +51,8 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
             initBtController()
         }
         binding.buttonSend.setOnClickListener{
+            val animation = AnimationUtils.loadAnimation( this,R.anim.rotate)
+            it.startAnimation(animation)
             startSecondActivity()
         }
     }

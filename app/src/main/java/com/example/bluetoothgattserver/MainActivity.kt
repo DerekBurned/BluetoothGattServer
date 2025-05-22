@@ -6,6 +6,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.view.animation.AnimationUtils
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
@@ -59,7 +61,12 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
             initBtController()
         }
         binding.buttonSend.setOnClickListener{
-            val animation = AnimationUtils.loadAnimation( this,R.anim.rotate)
+            val animation = AnimationUtils.loadAnimation( this,R.anim.shrink_and_rotate)
+            val layoutParams = binding.buttonSend.layoutParams
+            layoutParams.width = 100.toPx(this)
+            layoutParams.height = 100.toPx(this)
+            binding.buttonSend.layoutParams = layoutParams
+            binding.buttonSend.background = ContextCompat.getDrawable(this, R.drawable.round_button)
             it.startAnimation(animation)
             startSecondActivity()
         }
@@ -161,4 +168,6 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
             }
         }
     }
+
+    private fun Int.toPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()
 }

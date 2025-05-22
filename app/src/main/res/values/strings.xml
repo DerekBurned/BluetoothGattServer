@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">BluetoothGattServer</string>
+    <string name="app_name">My Application</string>
+    <string name="connected_devices_text_view">Bounded devices</string>
+    <string name="devices_found_text_view">Devices found</string>
+    <string name="input_data_to_selected_button">Input data to selected</string>
+    <string name="connectt_to_selected_btn">Connectt to selected</string>
+    <string name="connect">Connect</string>
+    <string name="discovery">discovery</string>
+    <string name="button_send_info">Send info</string>
+    <string name="example_hint">Enter ...</string>
 </resources>

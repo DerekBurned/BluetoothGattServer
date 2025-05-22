@@ -11,7 +11,7 @@ import com.example.bluetoothgattserver.databinding.DiscoveredDedviceItemBinding
 @SuppressLint("MissingPermission")
 class connectedDevices(
     private val onDeviceCheck: (BluetoothDevice, Boolean) -> Unit)
-    : ListAdapter<BluetoothDevice, connectedDevices.DeviceViewHolder>(PhoneDiffCallback()) {
+    : ListAdapter<BluetoothDevice, connectedDevices.DeviceViewHolder>(DeviceDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
         val binding  = DiscoveredDedviceItemBinding.
@@ -40,7 +40,7 @@ class connectedDevices(
         }
     }
 
-    class PhoneDiffCallback : DiffUtil.ItemCallback<BluetoothDevice>() {
+    class DeviceDiffCallback : DiffUtil.ItemCallback<BluetoothDevice>() {
         override fun areItemsTheSame(
             oldItem: BluetoothDevice, newItem: BluetoothDevice
         ): Boolean {

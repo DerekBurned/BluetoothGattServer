@@ -23,12 +23,12 @@
         android:id="@+id/scrollViewMac"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toStartOf="@+id/checkBoxFound"
         app:layout_constraintHorizontal_bias="0.5"
-        android:orientation="horizontal"
         app:layout_constraintStart_toEndOf="@+id/textViewNameFound"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
+
         <TextView
             android:id="@+id/textViewMacFound"
             android:layout_width="wrap_content"

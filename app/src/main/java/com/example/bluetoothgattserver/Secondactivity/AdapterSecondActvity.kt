@@ -14,22 +14,26 @@ import com.example.bluetoothgattserver.databinding.ActivitySendItemBinding
 //, termometr 1 (temp (double)), glukometr 1 ((double) stęrzenie glukosy we krwi (mg/dL)/(mmol/L) )
 //, pulsoksymetr 2((double)% saturacja tlenu(SpO2) (int)tętno (pul.))
 class AdapterSecondActvity(
-    private val onDeviceCheck: (BluetoothDevice, Boolean) -> Unit)
-    : ListAdapter<BluetoothDevice, AdapterSecondActvity.DeviceViewHolderSecondActivity>(DeviceDiffCallBackSecondActivity()) {
+    private val onDeviceCheck: (BluetoothDevice, Boolean) -> Unit,
+    private val infoOnDevice:(List<String>, BluetoothDevice) -> Unit
+) : ListAdapter<BluetoothDevice, AdapterSecondActvity.DeviceViewHolderSecondActivity>(
+    DeviceDiffCallBackSecondActivity()
+) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): DeviceViewHolderSecondActivity {
-        val binding = ActivitySendItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ActivitySendItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return DeviceViewHolderSecondActivity(binding)
     }
 
 
     override fun onBindViewHolder(holder: DeviceViewHolderSecondActivity, position: Int) {
+        val device = getItem(position)
+        holder.bind(device, onDeviceCheck)
     }
-
-
 
 
     inner class DeviceViewHolderSecondActivity(private val binding: ActivitySendItemBinding) :
@@ -37,13 +41,17 @@ class AdapterSecondActvity(
 
         @SuppressLint("MissingPermission")
         fun bind(device: BluetoothDevice, onDeviceCheck: (BluetoothDevice, Boolean) -> Unit) {
-
-
+           binding.textViewItem.text = device.name
+            binding.checkboxDevice.setOnCheckedChangeListener(null)
+            binding.checkboxDevice.isChecked = false
+            binding.checkboxDevice.setOnCheckedChangeListener { _, isChecked ->
+                onDeviceCheck(device, isChecked)
+            }
         }
     }
 
 
-    class DeviceDiffCallBackSecondActivity : DiffUtil.ItemCallback<BluetoothDevice>(){
+    class DeviceDiffCallBackSecondActivity : DiffUtil.ItemCallback<BluetoothDevice>() {
         override fun areItemsTheSame(oldItem: BluetoothDevice, newItem: BluetoothDevice): Boolean {
             return oldItem.address == newItem.address
         }
@@ -52,7 +60,8 @@ class AdapterSecondActvity(
             oldItem: BluetoothDevice,
             newItem: BluetoothDevice
         ): Boolean {
-            return oldItem == newItem        }
+            return oldItem == newItem
+        }
 
     }
 

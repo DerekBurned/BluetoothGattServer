@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.bluetoothgattserver.Secondactivity.SecondActivitySend
 import com.example.bluetoothgattserver.databinding.ActivityMainBinding
@@ -53,12 +52,7 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
             initBtController()
         }
         binding.buttonSend.setOnClickListener{
-            val animation = AnimationUtils.loadAnimation( this,R.anim.shrink_and_rotate)
-            val layoutParams = binding.buttonSend.layoutParams
-            layoutParams.width = 100
-            layoutParams.height = 100
-            binding.buttonSend.layoutParams = layoutParams
-            binding.buttonSend.background = ContextCompat.getDrawable(this, R.drawable.round_button)
+            val animation = AnimationUtils.loadAnimation( this,R.anim.rotate)
             it.startAnimation(animation)
             startSecondActivity()
         }

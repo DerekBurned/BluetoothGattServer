@@ -148,6 +148,7 @@ class GattServerController(private val context: Context) {
         val device = connectedDevices[deviceAddress] ?: return false
         val characteristic = gattServer?.getService(SERVICE_UUID)?.getCharacteristic(CHARACTERISTIC_UUID) ?: return false
         characteristic.value = data
+        Log.d("Gatt Server message ", "Message sent to device adress: $deviceAddress, message: ${data.decodeToString()}")
         return gattServer?.notifyCharacteristicChanged(device, characteristic, false) ?: false
     }
 

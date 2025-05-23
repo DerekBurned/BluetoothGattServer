@@ -57,14 +57,14 @@ class AdapterSecondActvity(
 
             for ((index, value) in deviceData.values.withIndex()) {
                 val editText = EditText(binding.root.context).apply {
-                    setText(value)
+                    hint = value
                     textSize = 16f
                     setPadding(16, 8, 16, 8)
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     )
-                    hint = "Value ${index + 1}"
+
 
                     // Validation on focus lost or text changed
                     addTextChangedListener(object : TextWatcher {

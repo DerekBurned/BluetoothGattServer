@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import com.example.bluetoothgattserver.Secondactivity.SecondActivitySend
+import com.example.bluetoothgattserver.ThirdActivity.ThirdActivity
 import com.example.bluetoothgattserver.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -64,7 +65,8 @@ class MainActivity : AppCompatActivity(), GattServerListener {
             adapterRecycl.submitList(_connectedDevices)
         }
         binding.imageStartServer.setOnClickListener {
-            initBtController()
+        val intentthirdAct = Intent(this,ThirdActivity::class.java)
+            startActivity(intentthirdAct)
         }
         binding.buttonSend.setOnClickListener {
             val animation = AnimationUtils.loadAnimation(this, R.anim.shrink_and_rotate)
@@ -92,55 +94,46 @@ class MainActivity : AppCompatActivity(), GattServerListener {
     private fun startSecondActivity() {
         val navigate = Intent(this, SecondActivitySend::class.java)
         GlobalScope.launch(Dispatchers.Main) {
-            delay(1000)
+            delay(500)
             startActivity(navigate)
         }
     }
 
 
+    // MainActivity.kt
     override fun onDeviceConnected(device: BluetoothDevice) {
         runOnUiThread {
             if (_connectedDevices.none { it.second.address == device.address }) {
                 val displayName = "Device ${_connectedDevices.size + 1}"
                 _connectedDevices.add(Pair(displayName, device))
-                sharedDevicesViewModel.updateDevices(_connectedDevices) // Update the shared ViewModel
+                sharedDevicesViewModel.updateDevices(_connectedDevices) // Update ViewModel
                 adapterRecycl.notifyItemInserted(_connectedDevices.size - 1)
             }
         }
     }
 
-
     override fun onDeviceDisconnected(device: BluetoothDevice) {
         runOnUiThread {
-            Log.d("Connection", "Device disconnected ${device.name}, ${device.address}")
             val index = _connectedDevices.indexOfFirst { it.second.address == device.address }
             if (index != -1) {
                 _connectedDevices.removeAt(index)
-                sharedDevicesViewModel.updateDevices(_connectedDevices)
+                sharedDevicesViewModel.updateDevices(_connectedDevices) // Update ViewModel
                 adapterRecycl.notifyItemRemoved(index)
             }
-
         }
     }
 
+    // MainActivity.kt
     override fun onDataReceived(device: BluetoothDevice, data: ByteArray) {
         runOnUiThread {
             val message = data.decodeToString().trim()
             val index = _connectedDevices.indexOfFirst { it.second.address == device.address }
 
             if (message.startsWith("Name:") && index != -1) {
-                // Extract the actual name after "Name:"
                 val newName = message.removePrefix("Name:").trim()
-
-                // Update the display name
                 _connectedDevices[index] = Pair(newName, device)
-                sharedDevicesViewModel.updateDevices(_connectedDevices)
+                sharedDevicesViewModel.updateDevices(_connectedDevices) // Update ViewModel
                 adapterRecycl.notifyItemChanged(index)
-
-                Log.d("Message", "Device name updated to [$newName] for ${device.address}")
-            } else {
-                val name = _connectedDevices.getOrNull(index)?.first ?: "Unknown"
-                Log.d("Message", "From [$name]: $message")
             }
         }
     }

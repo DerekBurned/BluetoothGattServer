@@ -37,17 +37,21 @@ class SecondActivitySend : AppCompatActivity() {
         setContentView(binding.root)
         initViews()
 
+        // SecondActivitySend.kt
         sharedDevicesViewModel.connectedDevices.observe(this) { devices ->
             if (devices != null) {
-                // Update your RecyclerView here
+                // Sort devices based on customOrder
                 val sorted = devices.sortedBy { customOrder.indexOf(it.first) }
-                val deviceDataList = sorted.map { devicePair ->
+
+                // Map each device to DeviceData with its corresponding parameters
+                val deviceDataList = sorted.mapIndexed { index, devicePair ->
                     DeviceData(
                         name = devicePair.first,
                         device = devicePair.second,
-                        values = mutableListOf() // Adjust as needed
+                        values = listForAdapter.getOrNull(index)?.toMutableList() ?: mutableListOf()
                     )
                 }
+
                 adapterSecondActivity.submitList(deviceDataList)
             }
         }

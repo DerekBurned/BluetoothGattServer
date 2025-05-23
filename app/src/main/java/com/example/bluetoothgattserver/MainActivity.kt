@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.animation.AnimationUtils
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        forceAppTheme(isDark = false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestBluetoothPermissions()
@@ -170,4 +172,13 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
     }
 
     private fun Int.toPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()
+
+    fun forceAppTheme(isDark: Boolean) {
+        val mode = if (isDark) {
+            AppCompatDelegate.MODE_NIGHT_YES
+        } else {
+            AppCompatDelegate.MODE_NIGHT_NO
+        }
+        AppCompatDelegate.setDefaultNightMode(mode)
+    }
 }

@@ -50,15 +50,10 @@ class MainActivity : AppCompatActivity(), GattServerListener {
     }
 
     private fun initViews() {
-        adapterRecycl = connectedDevices { device, isChecked ->
-            if (isChecked) {
+        adapterRecycl = connectedDevices{ _, isCHecked ->
 
-                Log.d("Adapter", "Selected device: ${device.first} - ${device.second.address}")
-            } else {
-
-                Log.d("Adapter", "Deselected device: ${device.first}")
-            }
         }
+
 
         binding.recyclerViewItemsConnectedOrSaved.adapter = adapterRecycl
         lifecycleScope.launch {

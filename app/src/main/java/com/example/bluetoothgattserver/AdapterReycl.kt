@@ -30,12 +30,7 @@ class connectedDevices(
         fun bind(device: Pair<String,BluetoothDevice>, onDeviceCheck: (Pair<String,BluetoothDevice>, Boolean) -> Unit) {
             binding.textViewNameFound.text  = device.first
             binding.textViewMacFound.text = device.second.address
-            binding.checkBoxFound.setOnCheckedChangeListener(null)
-            binding.checkBoxFound.isChecked = false
 
-            binding.checkBoxFound.setOnCheckedChangeListener { _, isChecked ->
-                onDeviceCheck(device, isChecked)
-            }
 
         }
     }

@@ -24,13 +24,7 @@ class GattServerController(private val context: Context) {
         const val MAX_MTU = 247
     }
 
-    interface GattServerListener {
-        fun onDeviceConnected(device: BluetoothDevice)
-        fun onDeviceDisconnected(device: BluetoothDevice)
-        fun onDataReceived(device: BluetoothDevice, data: ByteArray)
-        fun onMtuChanged(device: BluetoothDevice, mtu: Int)
-        fun onNotificationSent(device: BluetoothDevice, status: Int)
-    }
+
 
     private var listener: GattServerListener? = null
 

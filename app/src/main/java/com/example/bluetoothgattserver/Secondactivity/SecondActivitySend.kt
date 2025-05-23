@@ -1,151 +1,111 @@
 package com.example.bluetoothgattserver.Secondactivity
 
+import BluetoothServerController.GattServerController
+import BluetoothServerController.GattServerManager
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
-import android.text.InputType
 import android.util.Log
-import android.view.View
-import android.widget.EditText
-import android.widget.LinearLayout
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.withStyledAttributes
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.bluetoothgattserver.SharedDevicesViewModel
-import com.example.bluetoothgattserver.connectedDevices
+import com.example.bluetoothgattserver.MyApplication
 import com.example.bluetoothgattserver.databinding.ActivitySecondSendBinding
 
+@SuppressLint("MissingPermission")
 class SecondActivitySend : AppCompatActivity() {
-    private val sharedDevicesViewModel: SharedDevicesViewModel by viewModels()
-    private lateinit var adapterSecondActivity:AdapterSecondActvity
-    private lateinit var binding:ActivitySecondSendBinding
-    private val selectedDevices = mutableListOf<BluetoothDevice>()
-    private val deviceParameters = mutableMapOf<String, List<String>>()
-    private lateinit var connectedDevices: MutableList<BluetoothDevice>
+    private val sharedDevicesViewModel by lazy {
+        (application as MyApplication).sharedDevicesViewModel
+    }
+    private lateinit var adapterSecondActivity: AdapterSecondActvity
+    private lateinit var binding: ActivitySecondSendBinding
+    private lateinit var serverController: GattServerController
+    private val selectedDevices = mutableListOf<Pair<BluetoothDevice, List<String>>>()
+    private val customOrder = listOf("Ciśniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
+
+    private val listForAdapter = listOf(
+        listOf("Ciśnienie skurczowe (SYS)", "Ciśnienie rozkurczowe (DIA)", "Tętno (pul.)"),
+        listOf("Temperatura (C°)"),
+        listOf("Stężenie glukozy"),
+        listOf("% Saturacja tlenu (SpO2)", "Tętno (pul.)")
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySecondSendBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initViews()
-        initializeDeviceParameters()
-        sharedDevicesViewModel.connectedDevices.observe(this){
-                devices ->
-            connectedDevices = devices.toMutableList()
+
+        sharedDevicesViewModel.connectedDevices.observe(this) { devices ->
+            if (devices != null) {
+                // Update your RecyclerView here
+                val sorted = devices.sortedBy { customOrder.indexOf(it.first) }
+                val deviceDataList = sorted.map { devicePair ->
+                    DeviceData(
+                        name = devicePair.first,
+                        device = devicePair.second,
+                        values = mutableListOf() // Adjust as needed
+                    )
+                }
+                adapterSecondActivity.submitList(deviceDataList)
+            }
+        }
+    }
+
+    private fun initListToAdapter(
+        devices: List<Pair<String, BluetoothDevice>>,
+        strings: List<List<String>>
+    ): List<Pair<Pair<String, BluetoothDevice>, List<String>>> {
+        val adjustedStrings = strings.take(devices.size)
+        return devices.zip(adjustedStrings).map { (devicePair, params) ->
+            Pair(devicePair, params)
+        }
+    }
+
+    @SuppressLint("ImplicitSamInstance")
+    private fun initViews() {
+        serverController = GattServerManager.getController()!!
+        adapterSecondActivity = AdapterSecondActvity { device, params, isChecked ->
+
+            if (isChecked) {
+                selectedDevices.add(Pair(device, params))
+            } else {
+                selectedDevices.remove(Pair(device, params))
+            }
 
 
         }
-
-
-    }
-    private fun initializeDeviceParameters() {
-        deviceParameters["Ciśniomierz"] = listOf("Sys", "Dia", "Pul")
-        deviceParameters["Termometr"] = listOf("Temp")
-        deviceParameters["Glukometr"] = listOf("Glukoza")
-        deviceParameters["Pulsoksymetr"] = listOf("SpO2", "Pul")
-    }
-    private fun initViews(){
-        val bluetoothDevices = connectedDevices
-
-        adapterSecondActivity = AdapterSecondActvity(
-            onDeviceCheck = { device, isChecked ->
-                // Handle device selection
-                if (isChecked) {
-                    selectedDevices.add(device)
-                } else {
-                    selectedDevices.remove(device)
-                }
-            },
-            infoOnDevice = { params, device ->
-                // Handle parameter information for the device
-                showParameterDialog(params, device)
-            }
-        )
 
         binding.recyclerViewItems.apply {
             layoutManager = LinearLayoutManager(this@SecondActivitySend)
             adapter = adapterSecondActivity
             itemAnimator = DefaultItemAnimator()
         }
+        binding.buttonSendInfo.setOnClickListener {
+            for (devicePair in selectedDevices) {
+                val device = devicePair.first
+                val inputParams = devicePair.second
 
-        // Submit your device list to the adapter
-        adapterSecondActivity.submitList(bluetoothDevices)
-    }
+                // Validate and prepare data bytes to send
+                val dataToSend = prepareDataToSend(inputParams)
 
-    }
-@SuppressLint("MissingPermission")
-private fun showParameterDialog(params: List<String>, device: BluetoothDevice) {
-    // Create a dialog or new activity to show/edit parameters
-    val dialog = AlertDialog.Builder(this)
-        .setTitle("Enter Parameters for ${device.name}")
-        .setView(createParameterInputViews(params))
-        .setPositiveButton("Save") { dialog, _ ->
-            // Handle saving parameters
-            saveParametersForDevice(device)
-            dialog.dismiss()
-        }
-        .setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-        .create()
-
-    dialog.show()
-}
-private fun createParameterInputViews(params: List<String>): View {
-    val layout = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        setPadding(32, 32, 32, 32)
-    }
-
-
-    params.forEach { paramName ->
-        val input = EditText(this).apply {
-            hint = paramName
-            // Set appropriate input type based on parameter
-            inputType = when {
-                paramName.contains("Temp", ignoreCase = true) ->
-                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-                paramName.contains("Pul", ignoreCase = true) ->
-                    InputType.TYPE_CLASS_NUMBER
-                else -> InputType.TYPE_CLASS_TEXT
+                // Send to device by its address
+                val success = serverController.notifyDevice(device.address, dataToSend)
+                if (!success) {
+                    Log.e("SecondActivitySend", "Failed to send data to device: ${device.address}")
+                } else {
+                    Log.i("SecondActivitySend", "Data sent to device: ${device.address}")
+                }
             }
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = 16
-            }
-
-            // Add tag to identify which parameter this is
-            tag = paramName
         }
 
-        layout.addView(input)
+
+    }
+    private fun prepareDataToSend(inputParams: List<String>): ByteArray {
+        // For example, join inputs with commas
+        val dataString = inputParams.joinToString(separator = ",")
+        return dataString.toByteArray(Charsets.UTF_8)
     }
 
-    return layout
-}
-private fun getParametersForDevice(device: BluetoothDevice): Map<String, String> {
-    // Implement this to retrieve saved parameters for the device
-    return emptyMap()
-}
-
-private fun sendDataToDevices(data: List<Map<String, Any>>) {
-    // Implement your BLE sending logic here
-    data.forEach { deviceData ->
-        Log.d("SendingData", "Device: ${deviceData["device"]}")
-        (deviceData["parameters"] as? Map<*, *>)?.forEach { (key, value) ->
-            Log.d("SendingData", "$key: $value")
-        }
-    }
-}
-private fun saveParametersForDevice(device: BluetoothDevice) {
-    // Implement your parameter saving logic here
-    // You'll need to get references to the EditText views and save their values
-}
 }

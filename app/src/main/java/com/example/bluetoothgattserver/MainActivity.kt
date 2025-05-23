@@ -1,6 +1,7 @@
 package com.example.bluetoothgattserver
 
 import BluetoothServerController.GattServerController
+import BluetoothServerController.GattServerListener
 import BluetoothServerController.GattServerManager
 import android.Manifest
 import android.annotation.SuppressLint
@@ -28,14 +29,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @SuppressLint("MissingPermission")
-class MainActivity : AppCompatActivity(), GattServerController.GattServerListener {
-    private lateinit var adapterRecycl:connectedDevices
-    private lateinit var binding:ActivityMainBinding
-    private var _connectedDevices = mutableListOf<BluetoothDevice>()
+class MainActivity : AppCompatActivity(), GattServerListener {
+    private lateinit var adapterRecycl: connectedDevices
+    private lateinit var binding: ActivityMainBinding
+    private var _connectedDevices = mutableListOf<Pair<String, BluetoothDevice>>()
     private final val PERMISSION_REQUEST_CODE = 123
-   private val sharedDevicesViewModel: SharedDevicesViewModel by viewModels(
+    private val sharedDevicesViewModel by lazy {
+        (application as MyApplication).sharedDevicesViewModel
+    }
 
-    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         forceAppTheme(isDark = false)
@@ -44,14 +47,15 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
         requestBluetoothPermissions()
         initViews()
     }
-    private fun initViews(){
-        adapterRecycl = connectedDevices{device, isChecked ->
+
+    private fun initViews() {
+        adapterRecycl = connectedDevices { device, isChecked ->
             if (isChecked) {
 
-                Log.d("Adapter", "Selected device: ${device.name} - ${device.address}")
+                Log.d("Adapter", "Selected device: ${device.first} - ${device.second.address}")
             } else {
 
-                Log.d("Adapter", "Deselected device: ${device.name}")
+                Log.d("Adapter", "Deselected device: ${device.first}")
             }
         }
 
@@ -62,8 +66,8 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
         binding.imageStartServer.setOnClickListener {
             initBtController()
         }
-        binding.buttonSend.setOnClickListener{
-            val animation = AnimationUtils.loadAnimation( this,R.anim.shrink_and_rotate)
+        binding.buttonSend.setOnClickListener {
+            val animation = AnimationUtils.loadAnimation(this, R.anim.shrink_and_rotate)
             val layoutParams = binding.buttonSend.layoutParams
             layoutParams.width = 100.toPx(this)
             layoutParams.height = 100.toPx(this)
@@ -73,6 +77,7 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
             startSecondActivity()
         }
     }
+
     private fun initBtController() {
         GattServerManager.initialize(this)
         val controller = GattServerManager.getController() ?: return
@@ -84,101 +89,129 @@ class MainActivity : AppCompatActivity(), GattServerController.GattServerListene
         }
     }
 
-    private fun startSecondActivity(){
+    private fun startSecondActivity() {
         val navigate = Intent(this, SecondActivitySend::class.java)
-       GlobalScope.launch(Dispatchers.Main) {
-           delay(1000)
-           startActivity(navigate)
-       }    }
+        GlobalScope.launch(Dispatchers.Main) {
+            delay(1000)
+            startActivity(navigate)
+        }
+    }
 
 
     override fun onDeviceConnected(device: BluetoothDevice) {
         runOnUiThread {
-            if(!_connectedDevices.contains(device)){
-                _connectedDevices.add(device)
-                sharedDevicesViewModel.updateDevices(_connectedDevices)
-                adapterRecycl.notifyItemInserted(_connectedDevices.size-1)
-
+            if (_connectedDevices.none { it.second.address == device.address }) {
+                val displayName = "Device ${_connectedDevices.size + 1}"
+                _connectedDevices.add(Pair(displayName, device))
+                sharedDevicesViewModel.updateDevices(_connectedDevices) // Update the shared ViewModel
+                adapterRecycl.notifyItemInserted(_connectedDevices.size - 1)
             }
-            Log.d("Connection" ,"Device connected ${device.name}, ${device.address}")
-
         }
     }
 
+
     override fun onDeviceDisconnected(device: BluetoothDevice) {
         runOnUiThread {
-            Log.d("Connection" ,"Device disconnected ${device.name}, ${device.address}")
-            val index = _connectedDevices.indexOfFirst { it.address == device.address }
+            Log.d("Connection", "Device disconnected ${device.name}, ${device.address}")
+            val index = _connectedDevices.indexOfFirst { it.second.address == device.address }
             if (index != -1) {
                 _connectedDevices.removeAt(index)
                 sharedDevicesViewModel.updateDevices(_connectedDevices)
                 adapterRecycl.notifyItemRemoved(index)
             }
+
         }
     }
 
     override fun onDataReceived(device: BluetoothDevice, data: ByteArray) {
         runOnUiThread {
-            val message = "From ${device.name}: ${data.decodeToString()}"
-            Log.d("Message", "$message")
-        }
-    }
+            val message = data.decodeToString().trim()
+            val index = _connectedDevices.indexOfFirst { it.second.address == device.address }
 
-    override fun onMtuChanged(device: BluetoothDevice, mtu: Int) {
-        Log.d("BleServer", "MTU for ${device.name} is now $mtu")
-    }
+            if (message.startsWith("Name:") && index != -1) {
+                // Extract the actual name after "Name:"
+                val newName = message.removePrefix("Name:").trim()
 
-    override fun onNotificationSent(device: BluetoothDevice, status: Int) {
-        Log.d("BleServer", "Notification to ${device.name} completed with status " +
-                "${if(status== BluetoothGatt.GATT_SUCCESS)"succeeded" else "failed"}")
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-            GattServerManager.stopServer()
-    }
-    private fun hasAllPermissions(): Boolean {
-        val permissions = arrayOf(
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_ADVERTISE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        return permissions.all {
-            ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
-        }
-    }
-    private fun requestBluetoothPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_ADVERTISE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE)
-    }
+                // Update the display name
+                _connectedDevices[index] = Pair(newName, device)
+                sharedDevicesViewModel.updateDevices(_connectedDevices)
+                adapterRecycl.notifyItemChanged(index)
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                Log.d("Bluetooth", "✅ All permissions granted.")
-                initBtController()
+                Log.d("Message", "Device name updated to [$newName] for ${device.address}")
             } else {
-                Log.d("Bluetooth", "❌ Some permissions were not granted.")
+                val name = _connectedDevices.getOrNull(index)?.first ?: "Unknown"
+                Log.d("Message", "From [$name]: $message")
             }
         }
     }
 
-    private fun Int.toPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()
 
-    fun forceAppTheme(isDark: Boolean) {
-        val mode = if (isDark) {
-            AppCompatDelegate.MODE_NIGHT_YES
-        } else {
-            AppCompatDelegate.MODE_NIGHT_NO
+    override fun onMtuChanged(device: BluetoothDevice, mtu: Int) {
+            Log.d("BleServer", "MTU for ${device.name} is now $mtu")
         }
-        AppCompatDelegate.setDefaultNightMode(mode)
-    }
+
+        override fun onNotificationSent(device: BluetoothDevice, status: Int) {
+            Log.d(
+                "BleServer", "Notification to ${device.name} completed with status " +
+                        "${if (status == BluetoothGatt.GATT_SUCCESS) "succeeded" else "failed"}"
+            )
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            GattServerManager.stopServer()
+        }
+
+        private fun hasAllPermissions(): Boolean {
+            val permissions = arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            return permissions.all {
+                ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+            }
+        }
+
+        private fun requestBluetoothPermissions() {
+            val permissions = arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE)
+        }
+
+        override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+        ) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            if (requestCode == PERMISSION_REQUEST_CODE) {
+                if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                    Log.d("Bluetooth", "✅ All permissions granted.")
+                    initBtController()
+                } else {
+                    Log.d("Bluetooth", "❌ Some permissions were not granted.")
+                }
+            }
+        }
+
+        private fun Int.toPx(context: Context): Int =
+            (this * context.resources.displayMetrics.density).toInt()
+
+        fun forceAppTheme(isDark: Boolean) {
+            val mode = if (isDark) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+            AppCompatDelegate.setDefaultNightMode(mode)
+        }
 }
+

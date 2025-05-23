@@ -19,8 +19,8 @@ class GattServerController(private val context: Context) {
 
     companion object {
         val SERVICE_UUID: UUID = UUID.fromString("dc3bd49f-3a1a-4972-abd6-f3692a896a36")
-        val CHARACTERISTIC_UUID: UUID = UUID.fromString("a5d83445-3723-43c7-8702-d674edec9b8c")
-        val DESCRIPTOR_UUID: UUID = UUID.fromString("59dcbb7f-776f-446e-ab47-3d416288bfcf")
+        val CHARACTERISTIC_UUID: UUID = UUID.fromString("00002A37-0000-1000-8000-00805F9B34FB")
+        val DESCRIPTOR_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB")
         const val MAX_MTU = 247
     }
 

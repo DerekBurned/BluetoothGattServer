@@ -27,6 +27,9 @@
         android:theme="@style/Base.Theme.BluetoothGattServer"
         tools:targetApi="31">
         <activity
+            android:name=".ThirdActivity.ThirdActivity"
+            android:exported="false" />
+        <activity
             android:name=".Secondactivity.SecondActivitySend"
             android:exported="false"
             android:launchMode="singleTop"/>

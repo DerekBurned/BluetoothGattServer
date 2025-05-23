@@ -12,7 +12,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -92,6 +94,7 @@ class MainActivity : AppCompatActivity(), GattServerListener {
             delay(500)
             startActivity(navigate)
         }
+
     }
 
 
@@ -149,6 +152,19 @@ class MainActivity : AppCompatActivity(), GattServerListener {
             super.onDestroy()
             GattServerManager.stopServer()
         }
+
+    override fun onResume() {
+        super.onResume()
+        binding.buttonSend.clearAnimation()
+        binding.buttonSend.background = ContextCompat.getDrawable(this, R.drawable.normal_button)
+        val marginHorizontal = 16.toPx(this)
+        val layoutParams1 = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        layoutParams1.setMargins(marginHorizontal, 0, marginHorizontal, marginHorizontal)
+        binding.buttonSend.layoutParams = layoutParams1
+    }
 
         private fun hasAllPermissions(): Boolean {
             val permissions = arrayOf(

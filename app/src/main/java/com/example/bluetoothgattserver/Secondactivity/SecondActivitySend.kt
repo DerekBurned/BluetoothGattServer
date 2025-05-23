@@ -4,6 +4,7 @@ import BluetoothServerController.GattServerController
 import BluetoothServerController.GattServerManager
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bluetoothgattserver.MyApplication
+import com.example.bluetoothgattserver.ThirdActivity.ThirdActivity
 import com.example.bluetoothgattserver.databinding.ActivitySecondSendBinding
 
 @SuppressLint("MissingPermission")
@@ -102,6 +104,10 @@ class SecondActivitySend : AppCompatActivity() {
                     Log.i("SecondActivitySend", "Data sent to device: ${device.address}")
                 }
             }
+        }
+        binding.imageButton.setOnClickListener {
+            val intent = Intent(this, ThirdActivity::class.java)
+            startActivity(intent)
         }
 
 

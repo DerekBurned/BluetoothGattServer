@@ -14,7 +14,7 @@
         android:layout_height="70dp"
         android:layout_margin="16dp"
         android:layout_weight="0"
-        app:cardBackgroundColor="#FF6200EE"
+        app:cardBackgroundColor="@color/purple"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,7 +34,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAlignment="center"
-            android:gravity="center_vertical"
             android:text="@string/connected_devices_text_view"
             android:textColor="@android:color/white"
             android:textSize="20sp"
@@ -62,7 +61,7 @@
         app:layout_constraintTop_toBottomOf="@id/cardView"
         app:layout_constraintBottom_toTopOf="@id/buttonSend"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:itemCount="5"
+        tools:itemCount="4"
         tools:listitem="@layout/discovered_dedvice_item" />
 
     <Button
@@ -72,7 +71,7 @@
         android:layout_margin="16dp"
         android:layout_gravity="center"
         android:background="@drawable/normal_button"
-        android:backgroundTint="#FF6200EE"
+        android:backgroundTint="@color/purple"
         android:padding="12dp"
         android:stateListAnimator="@null"
         android:text="@string/connect_to_selected_btn"

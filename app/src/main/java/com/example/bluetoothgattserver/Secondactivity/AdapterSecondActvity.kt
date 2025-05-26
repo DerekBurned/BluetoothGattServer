@@ -30,8 +30,12 @@ class AdapterSecondActvity(
 
     fun getCurrentInputData(): List<DeviceData> = deviceDataList
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolderSecondActivity {
-        val binding = ActivitySendItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): DeviceViewHolderSecondActivity {
+        val binding =
+            ActivitySendItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return DeviceViewHolderSecondActivity(binding)
     }
 

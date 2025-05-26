@@ -8,14 +8,17 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bluetoothgattserver.databinding.DiscoveredDedviceItemBinding
-@SuppressLint("MissingPermission")
-class connectedDevices()
 
-    : ListAdapter<Pair<String,BluetoothDevice>, connectedDevices.DeviceViewHolder>(DeviceDiffCallback()) {
+@SuppressLint("MissingPermission")
+class ConnectedDevicesAdapter()
+
+    : ListAdapter<Pair<String, BluetoothDevice>, ConnectedDevicesAdapter.DeviceViewHolder>(
+    DeviceDiffCallback()
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
-        val binding  = DiscoveredDedviceItemBinding.
-        inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            DiscoveredDedviceItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return DeviceViewHolder(binding)
     }
 
@@ -27,24 +30,24 @@ class connectedDevices()
     inner class DeviceViewHolder(private val binding: DiscoveredDedviceItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(device: Pair<String,BluetoothDevice>) {
-            binding.textViewNameFound.text  = device.first
+        fun bind(device: Pair<String, BluetoothDevice>) {
+            binding.textViewNameFound.text = device.first
             binding.textViewMacFound.text = device.second.address
 
 
         }
     }
 
-    class DeviceDiffCallback : DiffUtil.ItemCallback<Pair<String,BluetoothDevice>>() {
+    class DeviceDiffCallback : DiffUtil.ItemCallback<Pair<String, BluetoothDevice>>() {
         override fun areItemsTheSame(
-            oldItem: Pair<String,BluetoothDevice>, newItem: Pair<String,BluetoothDevice>
+            oldItem: Pair<String, BluetoothDevice>, newItem: Pair<String, BluetoothDevice>
         ): Boolean {
             return oldItem.first == newItem.first
         }
 
         @SuppressLint("DiffUtilEquals")
         override fun areContentsTheSame(
-            oldItem: Pair<String,BluetoothDevice>, newItem: Pair<String,BluetoothDevice>
+            oldItem: Pair<String, BluetoothDevice>, newItem: Pair<String, BluetoothDevice>
         ): Boolean {
             return oldItem == newItem
         }

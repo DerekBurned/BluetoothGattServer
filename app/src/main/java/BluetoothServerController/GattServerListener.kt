@@ -2,7 +2,7 @@ package BluetoothServerController
 
 import android.bluetooth.BluetoothDevice
 
- interface GattServerListener {
+interface GattServerListener {
     fun onDeviceConnected(device: BluetoothDevice)
     fun onDeviceDisconnected(device: BluetoothDevice)
     fun onDataReceived(device: BluetoothDevice, data: ByteArray)

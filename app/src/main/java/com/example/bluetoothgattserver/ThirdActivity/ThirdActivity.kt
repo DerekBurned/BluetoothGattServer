@@ -9,7 +9,7 @@ import com.example.bluetoothgattserver.R
 import com.example.bluetoothgattserver.databinding.ActivityThirdBinding
 
 class ThirdActivity : AppCompatActivity() {
-    private lateinit var  binding:ActivityThirdBinding
+    private lateinit var binding: ActivityThirdBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityThirdBinding.inflate(layoutInflater)

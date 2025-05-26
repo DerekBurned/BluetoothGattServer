@@ -13,7 +13,8 @@ import java.util.*
 
 @SuppressLint("MissingPermission")
 class GattServerController(private val context: Context) {
-    private val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+    private val bluetoothManager =
+        context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     private val bluetoothAdapter = bluetoothManager.adapter
     private var gattServer: BluetoothGattServer? = null
     private val connectedDevices = mutableMapOf<String, BluetoothDevice>()
@@ -23,9 +24,7 @@ class GattServerController(private val context: Context) {
         val SERVICE_UUID: UUID = UUID.fromString("0000180D-0000-1000-8000-00805F9B34FB")
         val CHARACTERISTIC_UUID: UUID = UUID.fromString("00002A37-0000-1000-8000-00805F9B34FB")
         val DESCRIPTOR_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB")
-        const val MAX_MTU = 247
     }
-
 
 
     private var listener: GattServerListener? = null
@@ -42,6 +41,7 @@ class GattServerController(private val context: Context) {
                     Log.d("GattServer", "Device connected: ${device.address}")
                     listener?.onDeviceConnected(device)
                 }
+
                 BluetoothProfile.STATE_DISCONNECTED -> {
                     connectedDevices.remove(device.address)
                     Log.d("GattServer", "Device disconnected: ${device.address}")
@@ -59,7 +59,13 @@ class GattServerController(private val context: Context) {
             device: BluetoothDevice, requestId: Int, offset: Int,
             characteristic: BluetoothGattCharacteristic
         ) {
-            gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.value)
+            gattServer?.sendResponse(
+                device,
+                requestId,
+                BluetoothGatt.GATT_SUCCESS,
+                offset,
+                characteristic.value
+            )
             Log.d("GattServer", "Read request from ${device.address}")
         }
 
@@ -68,7 +74,13 @@ class GattServerController(private val context: Context) {
             preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray
         ) {
             if (responseNeeded) {
-                gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, null)
+                gattServer?.sendResponse(
+                    device,
+                    requestId,
+                    BluetoothGatt.GATT_SUCCESS,
+                    offset,
+                    null
+                )
             }
             Log.d("GattServer", "Write request from ${device.address}: ${value.decodeToString()}")
             listener?.onDataReceived(device, value)
@@ -79,7 +91,13 @@ class GattServerController(private val context: Context) {
             preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray
         ) {
             if (descriptor.uuid == DESCRIPTOR_UUID && responseNeeded) {
-                gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, null)
+                gattServer?.sendResponse(
+                    device,
+                    requestId,
+                    BluetoothGatt.GATT_SUCCESS,
+                    offset,
+                    null
+                )
                 Log.d("GattServer", "Descriptor written by ${device.address}")
             }
         }
@@ -113,7 +131,8 @@ class GattServerController(private val context: Context) {
             BluetoothGattCharacteristic.PROPERTY_READ or BluetoothGattCharacteristic.PROPERTY_WRITE or BluetoothGattCharacteristic.PROPERTY_NOTIFY,
             BluetoothGattCharacteristic.PERMISSION_READ or BluetoothGattCharacteristic.PERMISSION_WRITE
         )
-        val descriptor = BluetoothGattDescriptor(DESCRIPTOR_UUID, BluetoothGattDescriptor.PERMISSION_WRITE)
+        val descriptor =
+            BluetoothGattDescriptor(DESCRIPTOR_UUID, BluetoothGattDescriptor.PERMISSION_WRITE)
         characteristic.addDescriptor(descriptor)
         service.addCharacteristic(characteristic)
 
@@ -137,21 +156,28 @@ class GattServerController(private val context: Context) {
 
     fun notifyAllDevices(data: ByteArray): Map<String, Boolean> {
         val result = mutableMapOf<String, Boolean>()
-        val characteristic = gattServer?.getService(SERVICE_UUID)?.getCharacteristic(CHARACTERISTIC_UUID)
-            ?: return result
+        val characteristic =
+            gattServer?.getService(SERVICE_UUID)?.getCharacteristic(CHARACTERISTIC_UUID)
+                ?: return result
         characteristic.value = data
 
         connectedDevices.values.forEach { device ->
-            result[device.address] = gattServer?.notifyCharacteristicChanged(device, characteristic, false) ?: false
+            result[device.address] =
+                gattServer?.notifyCharacteristicChanged(device, characteristic, false) ?: false
         }
         return result
     }
 
     fun notifyDevice(deviceAddress: String, data: ByteArray): Boolean {
         val device = connectedDevices[deviceAddress] ?: return false
-        val characteristic = gattServer?.getService(SERVICE_UUID)?.getCharacteristic(CHARACTERISTIC_UUID) ?: return false
+        val characteristic =
+            gattServer?.getService(SERVICE_UUID)?.getCharacteristic(CHARACTERISTIC_UUID)
+                ?: return false
         characteristic.value = data
-        Log.d("Gatt Server message ", "Message sent to device adress: $deviceAddress, message: ${data.decodeToString()}")
+        Log.d(
+            "Gatt Server message ",
+            "Message sent to device adress: $deviceAddress, message: ${data.decodeToString()}"
+        )
         return gattServer?.notifyCharacteristicChanged(device, characteristic, true) ?: false
 
     }
@@ -161,7 +187,13 @@ class GattServerController(private val context: Context) {
     fun isDeviceConnected(address: String): Boolean = connectedDevices.containsKey(address)
 
     private fun checkPermissions(): Boolean {
-        return ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_ADVERTISE) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.BLUETOOTH_CONNECT
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.BLUETOOTH_ADVERTISE
+                ) == PackageManager.PERMISSION_GRANTED
     }
 }

@@ -112,6 +112,7 @@ class SecondActivitySend : AppCompatActivity() {
 
 
     }
+
     private fun prepareDataToSend(inputParams: List<String>): ByteArray {
         // For example, join inputs with commas
         val dataString = inputParams.joinToString(separator = ",")

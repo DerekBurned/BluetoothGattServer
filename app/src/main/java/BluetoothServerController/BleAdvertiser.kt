@@ -3,6 +3,7 @@ package BluetoothServerController
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
@@ -14,6 +15,8 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 
 class BleAdvertiser(private val context: Context) {
+    private var bluetoothManager =
+        context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     private var bluetoothLeAdvertiser: BluetoothLeAdvertiser? = null
     private var advertising = false
 
@@ -49,7 +52,7 @@ class BleAdvertiser(private val context: Context) {
             return
         }
 
-        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        val bluetoothAdapter = bluetoothManager.adapter
         bluetoothLeAdvertiser = bluetoothAdapter.bluetoothLeAdvertiser
 
         val settings = AdvertiseSettings.Builder()
@@ -78,6 +81,9 @@ class BleAdvertiser(private val context: Context) {
     fun isAdvertising(): Boolean = advertising
 
     private fun hasPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_ADVERTISE) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.BLUETOOTH_ADVERTISE
+        ) == PackageManager.PERMISSION_GRANTED
     }
 }

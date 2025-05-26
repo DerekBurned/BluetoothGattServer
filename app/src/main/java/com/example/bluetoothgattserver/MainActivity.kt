@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("MissingPermission")
 class MainActivity : AppCompatActivity(), GattServerListener {
-    private lateinit var adapterRecycl: ConnectedDevicesAdapter
+    private lateinit var adapterRecycl: connectedDevices
     private lateinit var binding: ActivityMainBinding
     private var _connectedDevices = mutableListOf<Pair<String, BluetoothDevice>>()
     private final val PERMISSION_REQUEST_CODE = 123
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), GattServerListener {
     }
 
     private fun initViews() {
-        adapterRecycl = ConnectedDevicesAdapter()
+        adapterRecycl = connectedDevices()
         binding.recyclerViewItemsConnectedOrSaved.adapter = adapterRecycl
         lifecycleScope.launch {
             adapterRecycl.submitList(_connectedDevices)

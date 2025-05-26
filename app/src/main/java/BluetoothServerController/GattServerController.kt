@@ -5,7 +5,9 @@ import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import java.util.*
 
@@ -83,8 +85,9 @@ class GattServerController(private val context: Context) {
         }
 
         override fun onNotificationSent(device: BluetoothDevice, status: Int) {
-            Log.d("GattServer", "Notification sent to ${device.address}, status: $status")
             listener?.onNotificationSent(device, status)
+            Log.d("GattServer", "Notification sent to ${device.address}, status: $status")
+
         }
     }
 
@@ -149,7 +152,8 @@ class GattServerController(private val context: Context) {
         val characteristic = gattServer?.getService(SERVICE_UUID)?.getCharacteristic(CHARACTERISTIC_UUID) ?: return false
         characteristic.value = data
         Log.d("Gatt Server message ", "Message sent to device adress: $deviceAddress, message: ${data.decodeToString()}")
-        return gattServer?.notifyCharacteristicChanged(device, characteristic, false) ?: false
+        return gattServer?.notifyCharacteristicChanged(device, characteristic, true) ?: false
+
     }
 
     fun getConnectedDevices(): List<BluetoothDevice> = connectedDevices.values.toList()

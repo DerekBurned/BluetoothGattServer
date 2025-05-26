@@ -12,6 +12,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
@@ -67,10 +68,15 @@ class MainActivity : AppCompatActivity(), GattServerListener {
         }
         binding.buttonSend.setOnClickListener {
             val animation = AnimationUtils.loadAnimation(this, R.anim.shrink_and_rotate)
+
             val layoutParams = binding.buttonSend.layoutParams
-            layoutParams.width = 100.toPx(this)
-            layoutParams.height = 100.toPx(this)
-            binding.buttonSend.layoutParams = layoutParams
+            if (layoutParams is LinearLayout.LayoutParams) {
+                layoutParams.width = 100.toPx(this)
+                layoutParams.height = 100.toPx(this)
+                layoutParams.gravity = Gravity.CENTER
+                binding.buttonSend.layoutParams = layoutParams
+            }
+
             binding.buttonSend.background = ContextCompat.getDrawable(this, R.drawable.round_button)
             it.startAnimation(animation)
             startSecondActivity()

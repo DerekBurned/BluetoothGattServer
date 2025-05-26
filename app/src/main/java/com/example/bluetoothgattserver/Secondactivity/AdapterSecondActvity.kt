@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bluetoothgattserver.R
 import com.example.bluetoothgattserver.databinding.ActivitySendItemBinding
+import androidx.core.view.isVisible
 
 
 class AdapterSecondActvity(
@@ -56,7 +57,7 @@ class AdapterSecondActvity(
             binding.textViewItem.text = deviceData.name.ifEmpty { "Unknown" }
 
             binding.textViewItem.setOnClickListener {
-                if (binding.linearLayoutDeviceParam.visibility == View.VISIBLE) {
+                if (binding.linearLayoutDeviceParam.isVisible) {
                     val fadeOut =
                         AnimationUtils.loadAnimation(binding.root.context, R.anim.fade_out)
                     fadeOut.setAnimationListener(object : Animation.AnimationListener {
@@ -74,7 +75,6 @@ class AdapterSecondActvity(
                         AnimationUtils.loadAnimation(binding.root.context, R.anim.fade_slide_in)
                     )
 
-                    // Dodaj dynamicznie edytowalne pola
                     for ((index, value) in deviceData.values.withIndex()) {
                         val editText = EditText(binding.root.context).apply {
                             hint = value

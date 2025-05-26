@@ -99,8 +99,6 @@ class MainActivity : AppCompatActivity(), GattServerListener {
 
     }
 
-
-    // MainActivity.kt
     override fun onDeviceConnected(device: BluetoothDevice) {
         runOnUiThread {
             if (_connectedDevices.none { it.second.address == device.address }) {
@@ -123,7 +121,6 @@ class MainActivity : AppCompatActivity(), GattServerListener {
         }
     }
 
-    // MainActivity.kt
     override fun onDataReceived(device: BluetoothDevice, data: ByteArray) {
         runOnUiThread {
             val message = data.decodeToString().trim()

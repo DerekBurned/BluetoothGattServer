@@ -6,5 +6,5 @@ import android.bluetooth.BluetoothDevice
 data class DeviceData(
     val name: String,
     val device: BluetoothDevice,
-    val values: MutableList<String> // user editable inputs
+    val values: MutableList<String>
 )

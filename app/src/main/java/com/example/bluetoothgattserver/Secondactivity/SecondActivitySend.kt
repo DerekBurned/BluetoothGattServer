@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,13 +41,10 @@ class SecondActivitySend : AppCompatActivity() {
         setContentView(binding.root)
         initViews()
 
-        // SecondActivitySend.kt
         sharedDevicesViewModel.connectedDevices.observe(this) { devices ->
             if (devices != null) {
-                // Sort devices based on customOrder
                 val sorted = devices.sortedBy { customOrder.indexOf(it.first) }
 
-                // Map each device to DeviceData with its corresponding parameters
                 val deviceDataList = sorted.mapIndexed { index, devicePair ->
                     DeviceData(
                         name = devicePair.first,
@@ -96,10 +92,8 @@ class SecondActivitySend : AppCompatActivity() {
                 val device = devicePair.first
                 val inputParams = devicePair.second
 
-                // Validate and prepare data bytes to send
                 val dataToSend = prepareDataToSend(inputParams)
 
-                // Send to device by its address
                 val success = serverController.notifyDevice(device.address, dataToSend)
                 if (!success) {
                     Log.e("SecondActivitySend", "Failed to send data to device: ${device.address}")
@@ -117,7 +111,6 @@ class SecondActivitySend : AppCompatActivity() {
     }
 
     private fun prepareDataToSend(inputParams: List<String>): ByteArray {
-        // For example, join inputs with commas
         val dataString = inputParams.joinToString(separator = ",")
         return dataString.toByteArray(Charsets.UTF_8)
     }

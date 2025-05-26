@@ -7,9 +7,12 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.example.bluetoothgattserver.R
 import com.example.bluetoothgattserver.databinding.ActivitySendItemBinding
 
 
@@ -27,8 +30,12 @@ class AdapterSecondActvity(
 
     fun getCurrentInputData(): List<DeviceData> = deviceDataList
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolderSecondActivity {
-        val binding = ActivitySendItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): DeviceViewHolderSecondActivity {
+        val binding =
+            ActivitySendItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return DeviceViewHolderSecondActivity(binding)
     }
 
@@ -49,45 +56,74 @@ class AdapterSecondActvity(
             binding.textViewItem.text = deviceData.name.ifEmpty { "Unknown" }
 
             binding.textViewItem.setOnClickListener {
-                binding.linearLayoutDeviceParam.visibility =
-                    if (binding.linearLayoutDeviceParam.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-            }
-
-            binding.linearLayoutDeviceParam.removeAllViews()
-
-            for ((index, value) in deviceData.values.withIndex()) {
-                val editText = EditText(binding.root.context).apply {
-                    hint = value
-                    textSize = 16f
-                    setPadding(16, 8, 16, 8)
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    )
-
-
-                    // Validation on focus lost or text changed
-                    addTextChangedListener(object : TextWatcher {
-                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                        override fun afterTextChanged(s: Editable?) {
-                            val input = s?.toString()?.trim() ?: ""
-
-                            // Update the list with current input
-                            deviceData.values[index] = input
-
-                            // Validate: not empty and is a number (int or double)
-                            if (input.isEmpty()) {
-                                error = "Cannot be empty"
-                            } else if (!isValidNumber(input)) {
-                                error = "Must be a number"
-                            } else {
-                                error = null
-                            }
+                if (binding.linearLayoutDeviceParam.visibility == View.VISIBLE) {
+                    val fadeOut =
+                        AnimationUtils.loadAnimation(binding.root.context, R.anim.fade_out)
+                    fadeOut.setAnimationListener(object : Animation.AnimationListener {
+                        override fun onAnimationStart(animation: Animation?) {}
+                        override fun onAnimationRepeat(animation: Animation?) {}
+                        override fun onAnimationEnd(animation: Animation?) {
+                            binding.linearLayoutDeviceParam.visibility = View.GONE
+                            binding.linearLayoutDeviceParam.removeAllViews()
                         }
                     })
+                    binding.linearLayoutDeviceParam.startAnimation(fadeOut)
+                } else {
+                    binding.linearLayoutDeviceParam.visibility = View.VISIBLE
+                    binding.linearLayoutDeviceParam.startAnimation(
+                        AnimationUtils.loadAnimation(binding.root.context, R.anim.fade_slide_in)
+                    )
+
+                    // Dodaj dynamicznie edytowalne pola
+                    for ((index, value) in deviceData.values.withIndex()) {
+                        val editText = EditText(binding.root.context).apply {
+                            hint = value
+                            textSize = 16f
+                            setPadding(16, 8, 16, 8)
+                            layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+
+                            addTextChangedListener(object : TextWatcher {
+                                override fun beforeTextChanged(
+                                    s: CharSequence?,
+                                    start: Int,
+                                    count: Int,
+                                    after: Int
+                                ) {
+                                }
+
+                                override fun onTextChanged(
+                                    s: CharSequence?,
+                                    start: Int,
+                                    before: Int,
+                                    count: Int
+                                ) {
+                                }
+
+                                override fun afterTextChanged(s: Editable?) {
+                                    val input = s?.toString()?.trim() ?: ""
+                                    deviceData.values[index] = input
+                                    error = when {
+                                        input.isEmpty() -> "Cannot be empty"
+                                        !isValidNumber(input) -> "Must be a number"
+                                        else -> null
+                                    }
+                                }
+                            })
+                        }
+
+                        val itemAnimation = AnimationUtils.loadAnimation(
+                            binding.root.context,
+                            R.anim.fade_slide_in
+                        )
+                        itemAnimation.startOffset = (index * 80).toLong()
+                        editText.startAnimation(itemAnimation)
+
+                        binding.linearLayoutDeviceParam.addView(editText)
+                    }
                 }
-                binding.linearLayoutDeviceParam.addView(editText)
             }
 
             binding.checkboxDevice.setOnCheckedChangeListener(null)
@@ -98,8 +134,9 @@ class AdapterSecondActvity(
         }
 
         private fun isValidNumber(input: String): Boolean {
-            // Check if input is a valid int or double
             return input.toIntOrNull() != null || input.toDoubleOrNull() != null
         }
+
+
     }
 }

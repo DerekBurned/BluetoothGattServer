@@ -3,7 +3,7 @@
     <string name="connected_devices_text_view">Connected devices</string>
     <string name="devices_found_text_view">Devices found</string>
     <string name="input_data_to_selected_button">Input data to selected</string>
-    <string name="connect_to_selected_btn">Connect to selected</string>
+    <string name="connect_to_selected_btn">Input data to send</string>
     <string name="connect">Connect</string>
     <string name="discovery">discovery</string>
     <string name="button_send_info">Send info</string>

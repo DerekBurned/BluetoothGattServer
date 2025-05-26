@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bluetoothgattserver.databinding.ActivitySendItemBinding
+import androidx.core.view.isVisible
 
 
 class AdapterSecondActvity(
@@ -50,7 +51,7 @@ class AdapterSecondActvity(
 
             binding.textViewItem.setOnClickListener {
                 binding.linearLayoutDeviceParam.visibility =
-                    if (binding.linearLayoutDeviceParam.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+                    if (binding.linearLayoutDeviceParam.isVisible) View.GONE else View.VISIBLE
             }
 
             binding.linearLayoutDeviceParam.removeAllViews()
@@ -66,7 +67,6 @@ class AdapterSecondActvity(
                     )
 
 
-                    // Validation on focus lost or text changed
                     addTextChangedListener(object : TextWatcher {
                         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}

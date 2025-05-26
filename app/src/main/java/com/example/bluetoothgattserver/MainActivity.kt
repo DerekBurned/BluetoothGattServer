@@ -5,6 +5,7 @@ import BluetoothServerController.GattServerListener
 import BluetoothServerController.GattServerManager
 import android.Manifest
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.content.Context
@@ -24,6 +25,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.bluetoothgattserver.Secondactivity.SecondActivitySend
 import com.example.bluetoothgattserver.ThirdActivity.ThirdActivity
 import com.example.bluetoothgattserver.databinding.ActivityMainBinding
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -31,7 +33,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("MissingPermission")
 class MainActivity : AppCompatActivity(), GattServerListener {
-    private lateinit var adapterRecycl: connectedDevices
+    private lateinit var adapterRecycl: ConnectedDevicesAdapter
     private lateinit var binding: ActivityMainBinding
     private var _connectedDevices = mutableListOf<Pair<String, BluetoothDevice>>()
     private final val PERMISSION_REQUEST_CODE = 123
@@ -50,11 +52,7 @@ class MainActivity : AppCompatActivity(), GattServerListener {
     }
 
     private fun initViews() {
-        adapterRecycl = connectedDevices{ _, isCHecked ->
-
-        }
-
-
+        adapterRecycl = ConnectedDevicesAdapter()
         binding.recyclerViewItemsConnectedOrSaved.adapter = adapterRecycl
         lifecycleScope.launch {
             adapterRecycl.submitList(_connectedDevices)
@@ -64,6 +62,7 @@ class MainActivity : AppCompatActivity(), GattServerListener {
             startActivity(intentthirdAct)
         }
         binding.buttonSend.setOnClickListener {
+
             val animation = AnimationUtils.loadAnimation(this, R.anim.shrink_and_rotate)
             val layoutParams = binding.buttonSend.layoutParams
             layoutParams.width = 100.toPx(this)
@@ -86,6 +85,7 @@ class MainActivity : AppCompatActivity(), GattServerListener {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun startSecondActivity() {
         val navigate = Intent(this, SecondActivitySend::class.java)
         GlobalScope.launch(Dispatchers.Main) {
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity(), GattServerListener {
         override fun onNotificationSent(device: BluetoothDevice, status: Int) {
             Log.d(
                 "BleServer", "Notification to ${device.name} completed with status " +
-                        "${if (status == BluetoothGatt.GATT_SUCCESS) "succeeded" else "failed"}"
+                        if (status == BluetoothGatt.GATT_SUCCESS) "succeeded" else "failed"
             )
         }
 

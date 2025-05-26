@@ -10,6 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.example.bluetoothgattserver"
         minSdk = 31
+        //noinspection OldTargetApi
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"

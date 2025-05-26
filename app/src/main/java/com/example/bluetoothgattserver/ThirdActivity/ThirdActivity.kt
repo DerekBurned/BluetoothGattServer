@@ -1,5 +1,6 @@
 package com.example.bluetoothgattserver.ThirdActivity
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +15,7 @@ class ThirdActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityThirdBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        ActivityInfo.SCREEN_ORIENTATION_LOCKED
     }
 }

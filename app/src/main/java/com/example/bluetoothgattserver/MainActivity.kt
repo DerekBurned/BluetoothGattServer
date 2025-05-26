@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -41,6 +42,8 @@ class MainActivity : AppCompatActivity(), GattServerListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         forceAppTheme(isDark = false)
+        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        ActivityInfo.SCREEN_ORIENTATION_LOCKED
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestBluetoothPermissions()

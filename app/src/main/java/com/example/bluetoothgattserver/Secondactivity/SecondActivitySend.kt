@@ -114,36 +114,26 @@ class SecondActivitySend : AppCompatActivity() {
                 cancelAnimation()
                 progress = 0f
             }
-
-            // 2. Плавное исчезновение кнопки (гарантированно работает)
             binding.buttonSendInfo.animate()
                 .alpha(0f)
                 .setDuration(250)
                 .withEndAction {
                     binding.buttonSendInfo.visibility = View.INVISIBLE
-
-                    // 3. Точное позиционирование анимации
                     binding.animation.apply {
-                        // Рассчитываем позицию кнопки
                         val buttonPos = IntArray(2)
                         binding.buttonSendInfo.getLocationOnScreen(buttonPos)
-
                         val parentPos = IntArray(2)
                         (parent as View).getLocationOnScreen(parentPos)
-
-                        // Настройки смещения (подбирайте значения)
-                        val xOffset = -40f // смещение влево
-                        val yOffset = -260f // смещение вверх
+                        val xOffset = -40f
+                        val yOffset = -260f
 
                         x = buttonPos[0] - parentPos[0] + xOffset
                         y = buttonPos[1] - parentPos[1] + yOffset
 
-                        // Гарантированный запуск
                         visibility = View.VISIBLE
                         bringToFront()
                         requestLayout()
 
-                        // Особый случай для первого клика
                         if (isFirstClick) {
                             post {
                                 playAnimation()
@@ -156,7 +146,6 @@ class SecondActivitySend : AppCompatActivity() {
                 }
                 .start()
 
-            // 3. Ваш код отправки данных
             selectedDevices.forEach { (device, inputParams) ->
                 serverController.notifyDevice(
                     device.address,
@@ -164,7 +153,6 @@ class SecondActivitySend : AppCompatActivity() {
                 )
             }
 
-            // 5. Возврат кнопки
             binding.animation.addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     binding.animation.visibility = View.GONE

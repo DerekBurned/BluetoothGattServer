@@ -23,6 +23,7 @@ class AdapterSecondActvity(
 
     private val deviceDataList = mutableListOf<DeviceData>()
 
+    @SuppressLint("NotifyDataSetChanged")
     fun submitList(newList: List<DeviceData>) {
         deviceDataList.clear()
         deviceDataList.addAll(newList)

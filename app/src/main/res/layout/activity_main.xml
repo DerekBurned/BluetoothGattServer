@@ -105,8 +105,7 @@
         app:lottie_loop="false"
         app:lottie_rawRes="@raw/animation_arrow"
         app:lottie_renderMode="hardware"
-        app:lottie_speed="1.0"
-        tools:visibility="visible" />
+        app:lottie_speed="1.0"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

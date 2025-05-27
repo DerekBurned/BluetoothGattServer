@@ -11,8 +11,7 @@
     <string name="connected_device">Connected Device</string>
     <string name="title_send_info">Enter Info</string>
     <string name="the_development_team">The Development Team</string>
-    <string name="strazhevich_mikhail">User Interface Developer, Graphics \n \'Strazhevich Mikhail\'</string>
-    <string name="artsiomchyk_yahor">Hardware Developer
-                                   \n \'Artsiomchyk Yahor\'</string>
+    <string name="strazhevich_mikhail">User Interface And Graphics Developer \n \'Strazhevich Mikhail\'</string>
+    <string name="artsiomchyk_yahor">Hardware Developer\n \'Artsiomchyk Yahor\'</string>
     <string name="lukianiuk_danylo">Application Developer \n \'Lukianiuk Danylo\'</string>
 </resources>

@@ -3,6 +3,8 @@ package com.example.bluetoothgattserver
 import BluetoothServerController.GattServerListener
 import BluetoothServerController.GattServerManager
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
@@ -13,6 +15,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -38,6 +41,7 @@ class MainActivity : AppCompatActivity(), GattServerListener {
     private val sharedDevicesViewModel by lazy {
         (application as MyApplication).sharedDevicesViewModel
     }
+    private var isFirstClick = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +51,13 @@ class MainActivity : AppCompatActivity(), GattServerListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestBluetoothPermissions()
+        binding.animationArrow.apply {
+            setAnimation(R.raw.animation_arrow)
+            post {
+                progress = 0f
+                alpha = 1f
+            }
+        }
         initViews()
     }
 
@@ -61,19 +72,56 @@ class MainActivity : AppCompatActivity(), GattServerListener {
             startActivity(intentthirdAct)
         }
         binding.buttonSend.setOnClickListener {
-
-            val animation = AnimationUtils.loadAnimation(this, R.anim.shrink_and_rotate)
-
-            val layoutParams = binding.buttonSend.layoutParams
-            if (layoutParams is LinearLayout.LayoutParams) {
-                layoutParams.width = 100.toPx(this)
-                layoutParams.height = 100.toPx(this)
-                layoutParams.gravity = Gravity.CENTER
-                binding.buttonSend.layoutParams = layoutParams
+            binding.animationArrow.apply {
+                cancelAnimation()
+                progress = 0f
             }
+            binding.buttonSend.animate()
+                .alpha(0f)
+                .setDuration(250)
+                .withEndAction {
+                    binding.buttonSend.visibility = View.INVISIBLE
+                    binding.animationArrow.apply {
+                        val buttonPos = IntArray(2)
+                        binding.buttonSend.getLocationOnScreen(buttonPos)
+                        val parentPos = IntArray(2)
+                        (parent as View).getLocationOnScreen(parentPos)
+                        val xOffset = +300f
+                        val yOffset = -60f
 
-            binding.buttonSend.background = ContextCompat.getDrawable(this, R.drawable.round_button)
-            it.startAnimation(animation)
+                        x = buttonPos[0] - parentPos[0] + xOffset
+                        y = buttonPos[1] - parentPos[1] + yOffset
+
+                        visibility = View.VISIBLE
+                        bringToFront()
+                        requestLayout()
+
+                        if (isFirstClick) {
+                            post {
+                                playAnimation()
+                                isFirstClick = false
+                            }
+                        } else {
+                            playAnimation()
+                        }
+                    }
+                }
+                .start()
+
+            binding.animationArrow.addAnimatorListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    binding.animationArrow.visibility = View.GONE
+
+                    binding.buttonSend.apply {
+                        visibility = View.VISIBLE
+                        alpha = 0f
+                        animate()
+                            .alpha(1f)
+                            .setDuration(250)
+                            .start()
+                    }
+                }
+            })
             startSecondActivity()
         }
     }

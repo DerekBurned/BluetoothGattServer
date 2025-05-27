@@ -2,16 +2,29 @@ package com.example.bluetoothgattserver.Secondactivity
 
 import BluetoothServerController.GattServerController
 import BluetoothServerController.GattServerManager
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.View
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.airbnb.lottie.RenderMode
 import com.example.bluetoothgattserver.MyApplication
+import com.example.bluetoothgattserver.R
 import com.example.bluetoothgattserver.ThirdActivity.ThirdActivity
 import com.example.bluetoothgattserver.databinding.ActivitySecondSendBinding
 
@@ -25,6 +38,7 @@ class SecondActivitySend : AppCompatActivity() {
     private lateinit var serverController: GattServerController
     private val selectedDevices = mutableListOf<Pair<BluetoothDevice, List<String>>>()
     private val customOrder = listOf("Ciśniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
+    private var isFirstClick = true
 
     private val listForAdapter = listOf(
         listOf("Ciśnienie skurczowe (SYS)", "Ciśnienie rozkurczowe (DIA)", "Tętno (pul.)"),
@@ -39,6 +53,13 @@ class SecondActivitySend : AppCompatActivity() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
         setContentView(binding.root)
+        binding.animation.apply {
+            setAnimation(R.raw.send_animation)
+            post {
+                progress = 0f
+                alpha = 1f
+            }
+        }
         initViews()
 
         sharedDevicesViewModel.connectedDevices.observe(this) { devices ->
@@ -87,20 +108,77 @@ class SecondActivitySend : AppCompatActivity() {
             adapter = adapterSecondActivity
             itemAnimator = DefaultItemAnimator()
         }
+
         binding.buttonSendInfo.setOnClickListener {
-            for (devicePair in selectedDevices) {
-                val device = devicePair.first
-                val inputParams = devicePair.second
-
-                val dataToSend = prepareDataToSend(inputParams)
-
-                val success = serverController.notifyDevice(device.address, dataToSend)
-                if (!success) {
-                    Log.e("SecondActivitySend", "Failed to send data to device: ${device.address}")
-                } else {
-                    Log.i("SecondActivitySend", "Data sent to device: ${device.address}")
-                }
+            binding.animation.apply {
+                cancelAnimation()
+                progress = 0f
             }
+
+            // 2. Плавное исчезновение кнопки (гарантированно работает)
+            binding.buttonSendInfo.animate()
+                .alpha(0f)
+                .setDuration(250)
+                .withEndAction {
+                    binding.buttonSendInfo.visibility = View.INVISIBLE
+
+                    // 3. Точное позиционирование анимации
+                    binding.animation.apply {
+                        // Рассчитываем позицию кнопки
+                        val buttonPos = IntArray(2)
+                        binding.buttonSendInfo.getLocationOnScreen(buttonPos)
+
+                        val parentPos = IntArray(2)
+                        (parent as View).getLocationOnScreen(parentPos)
+
+                        // Настройки смещения (подбирайте значения)
+                        val xOffset = -40f // смещение влево
+                        val yOffset = -260f // смещение вверх
+
+                        x = buttonPos[0] - parentPos[0] + xOffset
+                        y = buttonPos[1] - parentPos[1] + yOffset
+
+                        // Гарантированный запуск
+                        visibility = View.VISIBLE
+                        bringToFront()
+                        requestLayout()
+
+                        // Особый случай для первого клика
+                        if (isFirstClick) {
+                            post {
+                                playAnimation()
+                                isFirstClick = false
+                            }
+                        } else {
+                            playAnimation()
+                        }
+                    }
+                }
+                .start()
+
+            // 3. Ваш код отправки данных
+            selectedDevices.forEach { (device, inputParams) ->
+                serverController.notifyDevice(
+                    device.address,
+                    prepareDataToSend(inputParams)
+                )
+            }
+
+            // 5. Возврат кнопки
+            binding.animation.addAnimatorListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    binding.animation.visibility = View.GONE
+
+                    binding.buttonSendInfo.apply {
+                        visibility = View.VISIBLE
+                        alpha = 0f
+                        animate()
+                            .alpha(1f)
+                            .setDuration(250)
+                            .start()
+                    }
+                }
+            })
         }
         binding.imageButton.setOnClickListener {
             val intent = Intent(this, ThirdActivity::class.java)

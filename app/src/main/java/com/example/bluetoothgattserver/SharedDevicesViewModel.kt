@@ -1,4 +1,3 @@
-// SharedDevicesViewModel.kt
 import android.app.Application
 import android.bluetooth.BluetoothDevice
 import androidx.lifecycle.AndroidViewModel

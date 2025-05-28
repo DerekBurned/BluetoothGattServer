@@ -68,21 +68,25 @@ class SecondActivitySend : AppCompatActivity() {
 
         sharedDevicesViewModel.connectedDevices.observe(this) { devices ->
             if (devices != null) {
-                val sorted = devices.sortedBy { customOrder.indexOf(it.first) }
+                val filteredAndSorted = devices.filterAndSortByNames(customOrder)
 
-                val deviceDataList = sorted.mapIndexed { index, devicePair ->
+                val deviceDataList = filteredAndSorted.mapIndexed { index, devicePair ->
                     DeviceData(
                         name = devicePair.first,
                         device = devicePair.second,
                         values = listForAdapter.getOrNull(index)?.toMutableList() ?: mutableListOf()
                     )
                 }
-
                 adapterSecondActivity.submitList(deviceDataList)
             }
         }
     }
-
+    fun List<Pair<String, BluetoothDevice>>.filterAndSortByNames(
+        allowedNames: List<String>
+    ): List<Pair<String, BluetoothDevice>> {
+        return this.filter { allowedNames.contains(it.first) }
+            .sortedBy { allowedNames.indexOf(it.first) }
+    }
     private fun initListToAdapter(
         devices: List<Pair<String, BluetoothDevice>>,
         strings: List<List<String>>
@@ -99,6 +103,7 @@ class SecondActivitySend : AppCompatActivity() {
         adapterSecondActivity = AdapterSecondActvity { device, params, isChecked ->
 
             if (isChecked) {
+                Log.d("Adapter Second Activity", "Device selected: ${device.address}, p")
                 selectedDevices.add(Pair(device, params))
             } else {
                 selectedDevices.remove(Pair(device, params))

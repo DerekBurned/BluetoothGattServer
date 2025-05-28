@@ -91,21 +91,17 @@ class AdapterSecondActvity(
                     addNumberEditText("Tętno", deviceData, 2)
                 }
                 "Termometr" -> {
-                    // Add 1 EditText for temperature
                     addNumberEditText("Temperatura C°", deviceData, 0)
                 }
                 "Glukometr" -> {
-                    // Add 1 EditText and 1 Spinner for glucose meter
                     addNumberEditText("Stęrzenie glukosy", deviceData, 0)
                     addSpinner(deviceData, listOf("ml/dL", "mmol/L"), 1)
                 }
                 "Pulsoksymetr" -> {
-                    // Add 2 EditTexts for pulse oximeter
                     addNumberEditText("Saturacja tlenu(SpO2)", deviceData, 0)
                     addNumberEditText("Tętno", deviceData, 1)
                 }
                 else -> {
-                    // Default case (1 EditText)
                     addNumberEditText("Value", deviceData, 0)
                 }
             }

@@ -13,6 +13,8 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -61,6 +63,7 @@ class MainActivity : AppCompatActivity(), GattServerListener {
         initViews()
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     private fun initViews() {
         adapterRecycl = ConnectedDevicesAdapter()
         binding.recyclerViewItemsConnectedOrSaved.adapter = adapterRecycl
@@ -68,10 +71,12 @@ class MainActivity : AppCompatActivity(), GattServerListener {
             adapterRecycl.submitList(_connectedDevices)
         }
         binding.imageStartServer.setOnClickListener {
+            setVibrate()
             val intentthirdAct = Intent(this, ThirdActivity::class.java)
             startActivity(intentthirdAct)
         }
         binding.buttonSend.setOnClickListener {
+           setVibrate()
             binding.animationArrow.apply {
                 cancelAnimation()
                 progress = 0f
@@ -263,6 +268,23 @@ class MainActivity : AppCompatActivity(), GattServerListener {
             AppCompatDelegate.MODE_NIGHT_NO
         }
         AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
+    private fun setVibrate() {
+        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (vibrator.hasVibrator()) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        200,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+            }
+        } else {
+            vibrator.vibrate(200)
+        }
+
     }
 }
 

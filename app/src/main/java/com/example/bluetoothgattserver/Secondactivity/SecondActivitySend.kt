@@ -8,9 +8,12 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -23,6 +26,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.lottie.RenderMode
+import com.example.bluetoothgattserver.MainActivity
 import com.example.bluetoothgattserver.MyApplication
 import com.example.bluetoothgattserver.R
 import com.example.bluetoothgattserver.ThirdActivity.ThirdActivity
@@ -110,6 +114,7 @@ class SecondActivitySend : AppCompatActivity() {
         }
 
         binding.buttonSendInfo.setOnClickListener {
+            setVibrate()
             binding.animation.apply {
                 cancelAnimation()
                 progress = 0f
@@ -169,6 +174,7 @@ class SecondActivitySend : AppCompatActivity() {
             })
         }
         binding.imageButton.setOnClickListener {
+            setVibrate()
             val intent = Intent(this, ThirdActivity::class.java)
             startActivity(intent)
         }
@@ -180,5 +186,23 @@ class SecondActivitySend : AppCompatActivity() {
         val dataString = inputParams.joinToString(separator = ",")
         return dataString.toByteArray(Charsets.UTF_8)
     }
+
+    private fun setVibrate() {
+        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (vibrator.hasVibrator()) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        200,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+            }
+        } else {
+            vibrator.vibrate(200)
+        }
+
+    }
+
 
 }

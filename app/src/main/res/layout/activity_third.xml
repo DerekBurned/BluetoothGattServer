@@ -40,16 +40,16 @@
         android:id="@+id/textView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/device_item"
         android:text="@string/strazhevich_mikhail"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:background="@drawable/device_item"
-        android:textStyle="bold"
         android:textSize="19sp"
-        android:layout_margin="16dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageDev"/>
+        app:layout_constraintTop_toBottomOf="@id/imageDev" />
 
     <TextView
         android:id="@+id/textView2"
@@ -73,17 +73,38 @@
         android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/device_item"
         android:text="@string/artsiomchyk_yahor"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:background="@drawable/device_item"
-        android:textStyle="bold"
         android:textSize="19sp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="5dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView2"/>
+        app:layout_constraintTop_toBottomOf="@id/textView2" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationCat"
+        android:layout_width="210dp"
+        android:layout_height="179dp"
+        android:layout_marginBottom="40dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:lottie_autoPlay="false"
+        app:lottie_cacheComposition="true"
+        app:lottie_clipToCompositionBounds="true"
+        app:lottie_enableMergePathsForKitKatAndAbove="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/dev_animation"
+        app:lottie_renderMode="hardware"
+        app:lottie_speed="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -72,14 +72,8 @@ class SecondActivitySend : AppCompatActivity() {
             if (devices != null) {
                 val filteredAndSorted = devices.filterAndSortByNames(customOrder)
 
-                val deviceDataList = filteredAndSorted.mapIndexed { index, devicePair ->
-                    DeviceData(
-                        name = devicePair.first,
-                        device = devicePair.second,
-                        values = listForAdapter.getOrNull(index)?.toMutableList() ?: mutableListOf()
-                    )
-                }
-                adapterSecondActivity.submitList(deviceDataList)
+
+                adapterSecondActivity.updateConnectedDevices(filteredAndSorted)
             }
         }
     }
@@ -97,11 +91,11 @@ class SecondActivitySend : AppCompatActivity() {
         adapterSecondActivity = AdapterSecondActvity { device, params, isChecked ->
 
             if (isChecked) {
-                Log.d("Adapter Second Activity", "Device selected: ${device.address}, ${params.toList()}")
-                selectedDevices.add(Pair(device, params))
+                Log.d("Adapter Second Activity", "Device selected: ${device?.address}, ${params.toList()}")
+                selectedDevices.add(Pair(device, params) as Pair<BluetoothDevice, String>)
             } else {
                 selectedDevices.remove(Pair(device, params))
-                Log.d("Adapter Second Activity", "Device deselected: ${device.address}, ${params.toList()}")
+                Log.d("Adapter Second Activity", "Device deselected: ${device?.address}, ${params.toList()}")
 
             }
 

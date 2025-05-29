@@ -14,4 +14,8 @@
     <string name="strazhevich_mikhail">User Interface And Graphics Developer \n \'Strazhevich Mikhail\'</string>
     <string name="artsiomchyk_yahor">Hardware Developer\n \'Artsiomchyk Yahor\'</string>
     <string name="lukianiuk_danylo">Application Developer \n \'Lukianiuk Danylo\'</string>
+    <string name="error_empty">Nie może być puste</string>
+    <string name="error_not_number">Musi być liczbą</string>
+    <string name="error_range">Zakres:</string>
+
 </resources>

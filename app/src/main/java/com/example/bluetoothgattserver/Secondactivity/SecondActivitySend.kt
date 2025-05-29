@@ -40,7 +40,9 @@ class SecondActivitySend : AppCompatActivity() {
     private lateinit var adapterSecondActivity: AdapterSecondActvity
     private lateinit var binding: ActivitySecondSendBinding
     private lateinit var serverController: GattServerController
-    private val selectedDevices = mutableListOf<Pair<BluetoothDevice, List<String>>>()
+    private val selectedDevices = mutableListOf<Pair<BluetoothDevice, String>>()
+    private var previousConnectedDevices: List<Pair<String, BluetoothDevice>> = emptyList()
+
     private val customOrder = listOf("Ciśniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
     private var isFirstClick = true
 
@@ -87,15 +89,7 @@ class SecondActivitySend : AppCompatActivity() {
         return this.filter { allowedNames.contains(it.first) }
             .sortedBy { allowedNames.indexOf(it.first) }
     }
-    private fun initListToAdapter(
-        devices: List<Pair<String, BluetoothDevice>>,
-        strings: List<List<String>>
-    ): List<Pair<Pair<String, BluetoothDevice>, List<String>>> {
-        val adjustedStrings = strings.take(devices.size)
-        return devices.zip(adjustedStrings).map { (devicePair, params) ->
-            Pair(devicePair, params)
-        }
-    }
+
 
     @SuppressLint("ImplicitSamInstance")
     private fun initViews() {
@@ -103,10 +97,12 @@ class SecondActivitySend : AppCompatActivity() {
         adapterSecondActivity = AdapterSecondActvity { device, params, isChecked ->
 
             if (isChecked) {
-                Log.d("Adapter Second Activity", "Device selected: ${device.address}, p")
+                Log.d("Adapter Second Activity", "Device selected: ${device.address}, ${params.toList()}")
                 selectedDevices.add(Pair(device, params))
             } else {
                 selectedDevices.remove(Pair(device, params))
+                Log.d("Adapter Second Activity", "Device deselected: ${device.address}, ${params.toList()}")
+
             }
 
 
@@ -156,12 +152,17 @@ class SecondActivitySend : AppCompatActivity() {
                 }
                 .start()
 
+
+            Log.d("Selected devices info", "${selectedDevices.toList()}")
             selectedDevices.forEach { (device, inputParams) ->
                 serverController.notifyDevice(
                     device.address,
-                    prepareDataToSend(inputParams)
+                    inputParams.toByteArray()
                 )
             }
+            selectedDevices.clear()
+
+
 
             binding.animation.addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {

@@ -8,8 +8,10 @@ data class DeviceData(
     val values: MutableList<String> = when (name) {
         "Ciśniomierz" -> MutableList(3) { "" }
         "Termometr" -> MutableList(1) { "" }
-        "Glukometr" -> MutableList(2) { "" } // First for value, second for meal time
+        "Glukometr" -> MutableList(2) { "" }
         "Pulsoksymetr" -> MutableList(2) { "" }
         else -> MutableList(1) { "" }
     }
-)
+) {
+    val deviceId: String get() = device.address
+}

@@ -208,7 +208,7 @@ class MainActivity : AppCompatActivity(), GattServerListener {
     override fun onResume() {
         super.onResume()
         binding.buttonSend.clearAnimation()
-        binding.buttonSend.background = ContextCompat.getDrawable(this, R.drawable.normal_button)
+        binding.buttonSend.background = ContextCompat.getDrawable(this, R.drawable.button_neon)
         val marginHorizontal = 16.toPx(this)
         val layoutParams1 = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,

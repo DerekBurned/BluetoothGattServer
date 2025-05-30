@@ -194,9 +194,11 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
 
             if (message.startsWith("Name:") && index != -1) {
                 val newName = message.removePrefix("Name:").trim()
+                if(!_connectedDevices.contains(Pair(newName,device))){
                 _connectedDevices[index] = Pair(newName, device)
                 sharedDevicesViewModel.updateDevices(_connectedDevices) // Update ViewModel
                 adapterRecycl.notifyItemChanged(index)
+            }
             }
         }
     }

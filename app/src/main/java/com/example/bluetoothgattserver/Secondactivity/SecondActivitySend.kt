@@ -146,7 +146,7 @@ class SecondActivitySend : AppCompatActivity() {
                 }
                 .start()
 
-
+            filterToKeepLastMessages()
             Log.d("Selected devices info", "${selectedDevices.toList()}")
             selectedDevices.forEach { (device, inputParams) ->
                 serverController.notifyDevice(
@@ -154,7 +154,6 @@ class SecondActivitySend : AppCompatActivity() {
                     inputParams.toByteArray()
                 )
             }
-            selectedDevices.clear()
 
 
 
@@ -202,6 +201,16 @@ class SecondActivitySend : AppCompatActivity() {
             vibrator.vibrate(200)
         }
 
+    }
+
+    fun filterToKeepLastMessages() {
+        val uniqueByDevice = selectedDevices
+            .asReversed() // reverse to prioritize last entries
+            .distinctBy { it.first } // keep first occurrence of each device (which is the last message due to reversal)
+            .asReversed() // optional: re-reverse to keep original order
+
+        selectedDevices.clear()
+        selectedDevices.addAll(uniqueByDevice)
     }
 
 

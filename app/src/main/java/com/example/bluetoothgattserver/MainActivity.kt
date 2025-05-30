@@ -6,6 +6,7 @@ import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.content.Context
@@ -16,9 +17,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
-import android.view.Gravity
 import android.view.View
-import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -37,6 +36,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("MissingPermission")
 class MainActivity : AppCompatActivity(), GattServerListener {
     private lateinit var adapterRecycl: ConnectedDevicesAdapter
+    private val  bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private lateinit var binding: ActivityMainBinding
     private var _connectedDevices = mutableListOf<Pair<String, BluetoothDevice>>()
     private val PERMISSION_REQUEST_CODE = 123
@@ -251,7 +251,14 @@ class MainActivity : AppCompatActivity(), GattServerListener {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                 Log.d("Bluetooth", "✅ All permissions granted.")
+                if(!bluetoothAdapter.isEnabled){
+                val enable_Bluetooth = Intent(
+                    BluetoothAdapter.ACTION_REQUEST_ENABLE
+                )
+                startActivityForResult(enable_Bluetooth, 1)
+                }else{
                 initBtController()
+                }
             } else {
                 Log.d("Bluetooth", "❌ Some permissions were not granted.")
             }

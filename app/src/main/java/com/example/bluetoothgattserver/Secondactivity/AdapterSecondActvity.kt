@@ -89,12 +89,11 @@ class AdapterSecondActvity(
                 binding.textViewItem.setBackgroundResource(R.drawable.device_item)
                 binding.checkboxDevice.isEnabled = true
             } else {
-                binding.textViewItem.setBackgroundColor(R.color.black)
+                binding.textViewItem.setBackgroundResource(R.drawable.device_item_disconnect)
                 binding.checkboxDevice.isEnabled = false
                 binding.checkboxDevice.isChecked = false
             }
 
-            // NEW: Restore expand/collapse state
             val isExpanded = expandedStates[deviceName] ?: false
             binding.linearLayoutDeviceParam.visibility = if (isExpanded) View.VISIBLE else View.GONE
 
@@ -145,8 +144,6 @@ class AdapterSecondActvity(
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                     override fun afterTextChanged(s: Editable?) {
                         val input = s?.toString()?.trim() ?: ""
-
-                        // Save input
                         val values = inputValuesMap.getOrPut(deviceName) { MutableList(10) { "" } }
                         if (index >= values.size) {
                             while (values.size <= index) values.add("")

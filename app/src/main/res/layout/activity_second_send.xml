@@ -87,18 +87,21 @@
         app:lottie_speed="1.0"
         tools:visibility="visible" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonSendInfo"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:padding="10dp"
+        android:textSize="20sp"
+        android:text="@string/input_data_to_selected_button"
         android:background="@drawable/button_neon"
-        android:text="@string/button_send_info"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/Widget.AppCompat.Button" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

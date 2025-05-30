@@ -308,6 +308,8 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
     }
 
     override fun onBluetoothTurnedOff() {
+        _connectedDevices.clear()
+        sharedDevicesViewModel.updateDevices(_connectedDevices)
         val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
         startActivityForResult(enableBtIntent, 1)
     }

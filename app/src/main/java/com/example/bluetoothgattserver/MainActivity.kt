@@ -1,5 +1,7 @@
 package com.example.bluetoothgattserver
 
+import BluetoothServerController.BluetoothStateListener
+import BluetoothServerController.BtStateReceiver
 import BluetoothServerController.GattServerListener
 import BluetoothServerController.GattServerManager
 import android.Manifest
@@ -11,6 +13,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -22,19 +25,22 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.bluetoothgattserver.Secondactivity.SecondActivitySend
 import com.example.bluetoothgattserver.ThirdActivity.ThirdActivity
 import com.example.bluetoothgattserver.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 @SuppressLint("MissingPermission")
-class MainActivity : AppCompatActivity(), GattServerListener {
+class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateListener {
     private lateinit var adapterRecycl: ConnectedDevicesAdapter
     private val  bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private lateinit var binding: ActivityMainBinding
@@ -44,6 +50,7 @@ class MainActivity : AppCompatActivity(), GattServerListener {
         (application as MyApplication).sharedDevicesViewModel
     }
     private var isFirstClick = true
+    private lateinit var btReceiver: BtStateReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +60,9 @@ class MainActivity : AppCompatActivity(), GattServerListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestBluetoothPermissions()
+        btReceiver = BtStateReceiver(this)
+        val filter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+        registerReceiver(btReceiver, filter)
         binding.animationArrow.apply {
             setAnimation(R.raw.animation_arrow)
             post {
@@ -61,7 +71,10 @@ class MainActivity : AppCompatActivity(), GattServerListener {
             }
         }
         initViews()
+
     }
+
+
 
     @SuppressLint("ObsoleteSdkInt")
     private fun initViews() {
@@ -293,5 +306,14 @@ class MainActivity : AppCompatActivity(), GattServerListener {
         }
 
     }
+
+    override fun onBluetoothTurnedOff() {
+        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+        startActivityForResult(enableBtIntent, 1)
+    }
+
+    override fun onBluetoothTurnedOn() {
+        Log.d("BtState", "Bluetooth enabled")
+        }
 }
 

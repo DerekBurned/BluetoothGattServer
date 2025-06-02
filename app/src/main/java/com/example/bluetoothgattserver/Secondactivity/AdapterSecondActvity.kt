@@ -214,6 +214,7 @@ class AdapterSecondActvity(
 
         private fun getCombinedInputs(): String {
             val inputs = mutableListOf<String>()
+            inputs.add(binding.textViewItem.text.toString())
             for (i in 0 until binding.linearLayoutDeviceParam.childCount) {
                 when (val view = binding.linearLayoutDeviceParam.getChildAt(i)) {
                     is EditText -> inputs.add(view.text.toString().trim())

@@ -63,13 +63,13 @@ class AdapterSecondActvity(
             val isConnected = device != null
 
             when (deviceName) {
-                "Ciśniomierz" -> {
+                "Ciśnieniomierz" -> {
                     addNumberEditText(deviceName, "Sys. Ciśnienie skurczowe (mmHg)", 0, 50.0..250.0, device, onDeviceCheck)
                     addNumberEditText(deviceName, "Dia. Ciśnienie rozkurczowe (mmHg)", 1, 30.0..150.0, device, onDeviceCheck)
                     addNumberEditText(deviceName, "Tętno (bpm)", 2, 40.0..200.0, device, onDeviceCheck)
                 }
                 "Termometr" -> {
-                    addNumberEditText(deviceName, "Temperatura (°C)", 0, 35.0..42.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName, "Temperatura (°C)", 0, 35.0..50.0, device, onDeviceCheck)
                 }
                 "Glukometr" -> {
                     addNumberEditText(deviceName, "Stężenie glukozy", 0, 1.0..30.0, device, onDeviceCheck)

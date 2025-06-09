@@ -43,7 +43,7 @@ class SecondActivitySend : AppCompatActivity() {
     private val selectedDevices = mutableListOf<Pair<BluetoothDevice, String>>()
     private var previousConnectedDevices: List<Pair<String, BluetoothDevice>> = emptyList()
 
-    private val customOrder = listOf("Ciśniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
+    private val customOrder = listOf("Ciśnieniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
     private var isFirstClick = true
 
     private val listForAdapter = listOf(

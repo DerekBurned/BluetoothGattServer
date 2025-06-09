@@ -23,7 +23,7 @@ class AdapterSecondActvity(
     private val onDeviceCheck: (BluetoothDevice?, String, Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterSecondActvity.DeviceViewHolderSecondActivity>() {
 
-    private val deviceTypes = listOf("Ciśniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
+    private val deviceTypes = listOf("Ciśnieniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
     private val connectedDevices = mutableMapOf<String, BluetoothDevice>()
     private val inputValuesMap = mutableMapOf<String, MutableList<String>>()
 

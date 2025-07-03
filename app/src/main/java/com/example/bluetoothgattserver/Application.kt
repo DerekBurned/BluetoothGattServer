@@ -1,6 +1,5 @@
 package com.example.bluetoothgattserver
 
-import SharedDevicesViewModel
 import android.app.Application
 
 class MyApplication : Application() {

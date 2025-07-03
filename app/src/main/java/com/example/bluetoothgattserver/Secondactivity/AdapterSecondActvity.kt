@@ -6,6 +6,7 @@ import android.content.Context
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,23 +17,24 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.example.bluetoothgattserver.BluetoothDoman
 import com.example.bluetoothgattserver.R
 import com.example.bluetoothgattserver.databinding.ActivitySendItemBinding
 
 class AdapterSecondActvity(
-    private val onDeviceCheck: (BluetoothDevice?, String, Boolean) -> Unit
+    private val onDeviceCheck: (BluetoothDoman?, String, Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterSecondActvity.DeviceViewHolderSecondActivity>() {
 
     private val deviceTypes = listOf("Ciśnieniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
-    private val connectedDevices = mutableMapOf<String, BluetoothDevice>()
+    private val connectedDevices = mutableMapOf<String, BluetoothDoman>()
     private val inputValuesMap = mutableMapOf<String, MutableList<String>>()
 
     private val expandedStates = mutableMapOf<String, Boolean>()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateConnectedDevices(devices: List<Pair<String, BluetoothDevice>>) {
+    fun updateConnectedDevices(devices: List<BluetoothDoman>) {
         connectedDevices.clear()
-        connectedDevices.putAll(devices)
+        devices.forEach { connectedDevices[it.name] = it }
         notifyDataSetChanged()
     }
 
@@ -54,8 +56,8 @@ class AdapterSecondActvity(
         @SuppressLint("MissingPermission", "ResourceAsColor")
         fun bind(
             deviceName: String,
-            device: BluetoothDevice?,
-            onDeviceCheck: (BluetoothDevice, String, Boolean) -> Unit
+            device: BluetoothDoman?,
+            onDeviceCheck: (BluetoothDoman, String, Boolean) -> Unit
         ) {
             binding.linearLayoutDeviceParam.removeAllViews()
             binding.textViewItem.text = deviceName
@@ -64,24 +66,24 @@ class AdapterSecondActvity(
 
             when (deviceName) {
                 "Ciśnieniomierz" -> {
-                    addNumberEditText(deviceName, "Sys. Ciśnienie skurczowe (mmHg)", 0, 50.0..250.0, device, onDeviceCheck)
-                    addNumberEditText(deviceName, "Dia. Ciśnienie rozkurczowe (mmHg)", 1, 30.0..150.0, device, onDeviceCheck)
-                    addNumberEditText(deviceName, "Tętno (bpm)", 2, 40.0..200.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName, "Sys. Ciśnienie skurczowe (mmHg)", 0, 50.0..250.0,device, onDeviceCheck)
+                    addNumberEditText(deviceName, "Dia. Ciśnienie rozkurczowe (mmHg)", 1, 30.0..150.0,device, onDeviceCheck)
+                    addNumberEditText(deviceName, "Tętno (bpm)", 2, 40.0..200.0,device, onDeviceCheck)
                 }
                 "Termometr" -> {
-                    addNumberEditText(deviceName, "Temperatura (°C)", 0, 35.0..50.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName, "Temperatura (°C)", 0, 35.0..50.0,device, onDeviceCheck)
                 }
                 "Glukometr" -> {
-                    addNumberEditText(deviceName, "Stężenie glukozy", 0, 1.0..30.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName, "Stężenie glukozy", 0, 0.0..30.0,device, onDeviceCheck)
                     addUnitSpinner(deviceName, 1)
                 }
                 "Pulsoksymetr" -> {
-                    addNumberEditText(deviceName, "Saturacja tlenu (SpO2 %)", 0, 70.0..100.0, device, onDeviceCheck)
-                    addNumberEditText(deviceName, "Tętno (bpm)", 1, 40.0..200.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName, "Saturacja tlenu (SpO2 %)", 0, 70.0..100.0,device, onDeviceCheck)
+                    addNumberEditText(deviceName, "Tętno (bpm)", 1, 40.0..200.0,device, onDeviceCheck)
 
                 }
                 else -> {
-                    addNumberEditText(deviceName, "Wartość", 0, null, device, onDeviceCheck)
+                    addNumberEditText(deviceName, "Wartość", 0, null,device, onDeviceCheck)
                 }
             }
 
@@ -118,8 +120,8 @@ class AdapterSecondActvity(
             hint: String,
             index: Int,
             validRange: ClosedRange<Double>?,
-            device: BluetoothDevice?,
-            onDeviceCheck: (BluetoothDevice, String, Boolean) -> Unit
+            device: BluetoothDoman?,
+            onDeviceCheck: (BluetoothDoman, String, Boolean) -> Unit
         ) {
             val editText = EditText(binding.root.context).apply {
                 this.hint = hint
@@ -194,6 +196,10 @@ class AdapterSecondActvity(
                         while (valueList.size <= index) valueList.add("")
                     }
                     valueList[index] = selectedValue
+                    if(binding.checkboxDevice.isChecked){
+                        binding.checkboxDevice.isChecked = false
+                        binding.checkboxDevice.isChecked = true
+                    }
                 }
 
                 override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
@@ -208,6 +214,7 @@ class AdapterSecondActvity(
 
             animateView(spinner, index)
             binding.linearLayoutDeviceParam.addView(spinner)
+            Log.d("spinner", "Option selected = ${spinner.selectedItem}")
             return options[spinner.selectedItemPosition]
         }
 

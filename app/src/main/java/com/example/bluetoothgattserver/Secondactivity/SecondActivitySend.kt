@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.lottie.RenderMode
+import com.example.bluetoothgattserver.BluetoothDoman
 import com.example.bluetoothgattserver.MainActivity
 import com.example.bluetoothgattserver.MyApplication
 import com.example.bluetoothgattserver.R
@@ -40,18 +41,11 @@ class SecondActivitySend : AppCompatActivity() {
     private lateinit var adapterSecondActivity: AdapterSecondActvity
     private lateinit var binding: ActivitySecondSendBinding
     private lateinit var serverController: GattServerController
-    private val selectedDevices = mutableListOf<Pair<BluetoothDevice, String>>()
-    private var previousConnectedDevices: List<Pair<String, BluetoothDevice>> = emptyList()
-
-    private val customOrder = listOf("Ciśniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
+    private val selectedDevices = mutableListOf<Pair<BluetoothDoman, String>>()
+    private val customOrder = listOf("Ciśnieniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
     private var isFirstClick = true
 
-    private val listForAdapter = listOf(
-        listOf("Ciśnienie skurczowe (SYS)", "Ciśnienie rozkurczowe (DIA)", "Tętno (pul.)"),
-        listOf("Temperatura (C°)"),
-        listOf("Stężenie glukozy"),
-        listOf("% Saturacja tlenu (SpO2)", "Tętno (pul.)")
-    )
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,29 +71,29 @@ class SecondActivitySend : AppCompatActivity() {
             }
         }
     }
-    fun List<Pair<String, BluetoothDevice>>.filterAndSortByNames(
+    fun List<BluetoothDoman>.filterAndSortByNames(
         allowedNames: List<String>
-    ): List<Pair<String, BluetoothDevice>> {
-        return this.filter { allowedNames.contains(it.first) }
-            .sortedBy { allowedNames.indexOf(it.first) }
+    ): List<BluetoothDoman> {
+        return this.filter { allowedNames.contains(it.name) }
+            .sortedBy { allowedNames.indexOf(it.name) }
     }
 
 
     @SuppressLint("ImplicitSamInstance")
     private fun initViews() {
         serverController = GattServerManager.getController()!!
-        adapterSecondActivity = AdapterSecondActvity(this) { device, params, isChecked ->
-
+        adapterSecondActivity = AdapterSecondActvity { device, params, isChecked ->
             if (isChecked) {
-                Log.d("Adapter Second Activity", "Device selected: ${device?.address}, ${params.toList()}")
-                selectedDevices.add(Pair(device, params) as Pair<BluetoothDevice, String>)
+                device?.let { nonNullDevice ->  // Only add if device is not null
+                    Log.d("Adapter Second Activity", "Device selected: ${nonNullDevice.device.address}, ${params.toList()}")
+                    selectedDevices.add(nonNullDevice to params)
+                }
             } else {
-                selectedDevices.remove(Pair(device, params))
-                Log.d("Adapter Second Activity", "Device deselected: ${device?.address}, ${params.toList()}")
-
+                device?.let { nonNullDevice ->
+                    selectedDevices.removeAll { it.first == nonNullDevice }
+                    Log.d("Adapter Second Activity", "Device deselected: ${nonNullDevice.device.address}, ${params.toList()}")
+                }
             }
-
-
         }
 
         binding.recyclerViewItems.apply {
@@ -150,7 +144,7 @@ class SecondActivitySend : AppCompatActivity() {
             Log.d("Selected devices info", "${selectedDevices.toList()}")
             selectedDevices.forEach { (device, inputParams) ->
                 serverController.notifyDevice(
-                    device.address,
+                    device.device.address,
                     inputParams.toByteArray()
                 )
             }
@@ -181,10 +175,6 @@ class SecondActivitySend : AppCompatActivity() {
 
     }
 
-    private fun prepareDataToSend(inputParams: List<String>): ByteArray {
-        val dataString = inputParams.joinToString(separator = ",")
-        return dataString.toByteArray(Charsets.UTF_8)
-    }
 
     private fun setVibrate() {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator

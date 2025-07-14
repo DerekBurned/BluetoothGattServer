@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
     private lateinit var adapterRecycl: ConnectedDevicesAdapter
     private val  bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private lateinit var binding: ActivityMainBinding
-    private var _connectedDevices = mutableListOf<Pair<String, BluetoothDevice>>()
+    private var _connectedDevices = mutableListOf<BluetoothDoman>()
     private val PERMISSION_REQUEST_CODE = 123
     private val sharedDevicesViewModel by lazy {
         (application as MyApplication).sharedDevicesViewModel
@@ -167,10 +167,10 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
 
     override fun onDeviceConnected(device: BluetoothDevice) {
         runOnUiThread {
-            if (_connectedDevices.none { it.second.address == device.address }) {
+            if (_connectedDevices.none { it.device.address == device.address }) {
                 val displayName = "Device ${_connectedDevices.size + 1}"
-                _connectedDevices.add(Pair(displayName, device))
-                sharedDevicesViewModel.updateDevices(_connectedDevices) // Update ViewModel
+                _connectedDevices.add(BluetoothDoman(displayName, device))
+                sharedDevicesViewModel.updateDevices(_connectedDevices)
                 adapterRecycl.notifyItemInserted(_connectedDevices.size - 1)
             }
         }
@@ -178,10 +178,10 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
 
     override fun onDeviceDisconnected(device: BluetoothDevice) {
         runOnUiThread {
-            val index = _connectedDevices.indexOfFirst { it.second.address == device.address }
+            val index = _connectedDevices.indexOfFirst { it.device.address == device.address }
             if (index != -1) {
                 _connectedDevices.removeAt(index)
-                sharedDevicesViewModel.updateDevices(_connectedDevices) // Update ViewModel
+                sharedDevicesViewModel.updateDevices(_connectedDevices)
                 adapterRecycl.notifyItemRemoved(index)
             }
         }
@@ -190,18 +190,27 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
     override fun onDataReceived(device: BluetoothDevice, data: ByteArray) {
         runOnUiThread {
             val message = data.decodeToString().trim()
-            val index = _connectedDevices.indexOfFirst { it.second.address == device.address }
+            val index = _connectedDevices.indexOfFirst { it.device.address == device.address }
 
             if (message.startsWith("Name:") && index != -1) {
                 val newName = message.removePrefix("Name:").trim()
-                if(!_connectedDevices.contains(Pair(newName,device))){
-                _connectedDevices[index] = Pair(newName, device)
-                sharedDevicesViewModel.updateDevices(_connectedDevices) // Update ViewModel
-                adapterRecycl.notifyItemChanged(index)
-            }
+                if(!_connectedDevices.any { it.name == newName && it.device == device }) {
+                    _connectedDevices[index] = BluetoothDoman(newName, device)
+                    sharedDevicesViewModel.updateDevices(_connectedDevices)
+                    adapterRecycl.notifyItemChanged(index)
+                }
             }
         }
     }
+
+    override fun onBluetoothTurnedOff() {
+        _connectedDevices.clear()
+        sharedDevicesViewModel.updateDevices(_connectedDevices)
+        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+        startActivityForResult(enableBtIntent, 1)
+    }
+
+
 
 
     override fun onMtuChanged(device: BluetoothDevice, mtu: Int) {
@@ -309,12 +318,7 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
 
     }
 
-    override fun onBluetoothTurnedOff() {
-        _connectedDevices.clear()
-        sharedDevicesViewModel.updateDevices(_connectedDevices)
-        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-        startActivityForResult(enableBtIntent, 1)
-    }
+
 
     override fun onBluetoothTurnedOn() {
         Log.d("BtState", "Bluetooth enabled")

@@ -2,13 +2,13 @@
     <string name="app_name">Gatt Server</string>
     <string name="connected_devices_text_view">Connected devices</string>
     <string name="devices_found_text_view">Devices found</string>
-    <string name="input_data_to_selected_button">Input data to selected</string>
+    <string name="input_data_to_selected_button">Send data to selected</string>
     <string name="connect_to_selected_btn">Input data to send</string>
     <string name="connect">Connect</string>
     <string name="discovery">discovery</string>
     <string name="button_send_info">Send info</string>
     <string name="example_hint">Enter ...</string>
-    <string name="connected_device">Connected Device</string>
+    <string name="connected_device">Connected Devices</string>
     <string name="title_send_info">Enter Info</string>
     <string name="the_development_team">The Development Team</string>
     <string name="strazhevich_mikhail">User Interface And Graphics Developer \n \'Strazhevich Mikhail\'</string>

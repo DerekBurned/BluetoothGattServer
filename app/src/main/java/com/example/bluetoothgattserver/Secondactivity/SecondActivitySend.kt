@@ -88,7 +88,7 @@ class SecondActivitySend : AppCompatActivity() {
     @SuppressLint("ImplicitSamInstance")
     private fun initViews() {
         serverController = GattServerManager.getController()!!
-        adapterSecondActivity = AdapterSecondActvity { device, params, isChecked ->
+        adapterSecondActivity = AdapterSecondActvity(this) { device, params, isChecked ->
 
             if (isChecked) {
                 Log.d("Adapter Second Activity", "Device selected: ${device?.address}, ${params.toList()}")

@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.bluetoothgattserver.R
 import com.example.bluetoothgattserver.databinding.ActivitySendItemBinding
 
-class AdapterSecondActvity(
+class AdapterSecondActvity( val context: Context,
     private val onDeviceCheck: (BluetoothDevice?, String, Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterSecondActvity.DeviceViewHolderSecondActivity>() {
 
@@ -64,20 +64,27 @@ class AdapterSecondActvity(
 
             when (deviceName) {
                 "Ciśnieniomierz" -> {
-                    addNumberEditText(deviceName, "Sys. Ciśnienie skurczowe (mmHg)", 0, 50.0..250.0, device, onDeviceCheck)
-                    addNumberEditText(deviceName, "Dia. Ciśnienie rozkurczowe (mmHg)", 1, 30.0..150.0, device, onDeviceCheck)
-                    addNumberEditText(deviceName, "Tętno (bpm)", 2, 40.0..200.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName,
+                        context.getString(R.string.sys_ci_nienie_skurczowe_mmhg), 0, 50.0..250.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName,
+                        context.getString(R.string.dia_ci_nienie_rozkurczowe_mmhg), 1, 30.0..150.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName,
+                        context.getString(R.string.t_tno_bpm), 2, 40.0..200.0, device, onDeviceCheck)
                 }
                 "Termometr" -> {
-                    addNumberEditText(deviceName, "Temperatura (°C)", 0, 35.0..50.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName,
+                        context.getString(R.string.temperatura_c), 0, 35.0..50.0, device, onDeviceCheck)
                 }
                 "Glukometr" -> {
-                    addNumberEditText(deviceName, "Stężenie glukozy", 0, 1.0..30.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName,
+                        context.getString(R.string.st_enie_glukozy), 0, 1.0..30.0, device, onDeviceCheck)
                     addUnitSpinner(deviceName, 1)
                 }
                 "Pulsoksymetr" -> {
-                    addNumberEditText(deviceName, "Saturacja tlenu (SpO2 %)", 0, 70.0..100.0, device, onDeviceCheck)
-                    addNumberEditText(deviceName, "Tętno (bpm)", 1, 40.0..200.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName,
+                        context.getString(R.string.saturacja_tlenu_spo2), 0, 70.0..100.0, device, onDeviceCheck)
+                    addNumberEditText(deviceName,
+                        context.getString(R.string.t_tno_bpm), 1, 40.0..200.0, device, onDeviceCheck)
 
                 }
                 else -> {

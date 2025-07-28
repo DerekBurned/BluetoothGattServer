@@ -17,6 +17,11 @@
     <string name="error_empty">Nie może być puste</string>
     <string name="error_not_number">Musi być liczbą</string>
     <string name="error_range">Zakres:</string>
-    <string name="aboutTeam">About</string>
+    <string name="sys_ci_nienie_skurczowe_mmhg">Sys. Ciśnienie skurczowe (mmHg)</string>
+    <string name="dia_ci_nienie_rozkurczowe_mmhg">Dia. Ciśnienie rozkurczowe (mmHg)</string>
+    <string name="temperatura_c">Temperatura (°C)</string>
+    <string name="t_tno_bpm">Tętno (bpm)</string>
+    <string name="st_enie_glukozy">Stężenie glukozy</string>
+    <string name="saturacja_tlenu_spo2">Saturacja tlenu (SpO2 %)</string>
 
 </resources>

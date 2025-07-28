@@ -38,11 +38,14 @@
         <activity
             android:name=".Secondactivity.SecondActivitySend"
             android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             android:launchMode="singleTop"
             tools:ignore="DiscouragedApi,LockedOrientationActivity"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:launchMode="singleTop"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>

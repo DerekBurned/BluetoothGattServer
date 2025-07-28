@@ -16,6 +16,9 @@ object GattServerManager {
     fun getController(): GattServerController? {
         return gattServerController
     }
+    fun bluetoothEnabled() : Boolean{
+        return gattServerController?.bluetoothEnabled()!!
+    }
 
     fun isInitialized(): Boolean = gattServerController != null
 

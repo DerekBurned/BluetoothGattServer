@@ -11,7 +11,10 @@ import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
@@ -38,6 +41,9 @@ class SecondActivitySend : AppCompatActivity() {
     private val sharedDevicesViewModel by lazy {
         (application as MyApplication).sharedDevicesViewModel
     }
+    private val bluetoothStateViewModel by lazy {
+        (application as MyApplication).bluetoothStateViewModel
+    }
     private lateinit var adapterSecondActivity: AdapterSecondActvity
     private lateinit var binding: ActivitySecondSendBinding
     private lateinit var serverController: GattServerController
@@ -50,9 +56,7 @@ class SecondActivitySend : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySecondSendBinding.inflate(layoutInflater)
-        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
-        setContentView(binding.root)
+       setContentView(binding.root)
         binding.animation.apply {
             setAnimation(R.raw.send_animation)
             post {
@@ -62,6 +66,13 @@ class SecondActivitySend : AppCompatActivity() {
         }
         initViews()
 
+        bluetoothStateViewModel.bluetoothState.observe(this){
+            state ->
+            when (state) {
+                true -> binding.imageButton.imageTintList = ColorStateList.valueOf(Color.GREEN)
+                false -> binding.imageButton.imageTintList = ColorStateList.valueOf(Color.RED)
+            }
+        }
         sharedDevicesViewModel.connectedDevices.observe(this) { devices ->
             if (devices != null) {
                 val filteredAndSorted = devices.filterAndSortByNames(customOrder)
@@ -166,7 +177,7 @@ class SecondActivitySend : AppCompatActivity() {
                 }
             })
         }
-        binding.imageButton.setOnClickListener {
+        binding.buttonAbout.setOnClickListener {
             setVibrate()
             val intent = Intent(this, ThirdActivity::class.java)
             startActivity(intent)
@@ -175,6 +186,16 @@ class SecondActivitySend : AppCompatActivity() {
 
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        adapterSecondActivity.saveState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        adapterSecondActivity.restoreState(savedInstanceState)
+
+    }
 
     private fun setVibrate() {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator

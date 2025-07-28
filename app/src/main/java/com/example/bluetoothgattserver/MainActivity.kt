@@ -14,8 +14,9 @@ import android.bluetooth.BluetoothGatt
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -25,22 +26,19 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.bluetoothgattserver.Secondactivity.SecondActivitySend
-import com.example.bluetoothgattserver.ThirdActivity.ThirdActivity
 import com.example.bluetoothgattserver.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 @SuppressLint("MissingPermission")
 class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateListener {
+    private  val CONNECTED_DEVICES_KEY = "CONNECTED_DEVICES_LIST"
     private lateinit var adapterRecycl: ConnectedDevicesAdapter
     private val  bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private lateinit var binding: ActivityMainBinding
@@ -49,14 +47,15 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
     private val sharedDevicesViewModel by lazy {
         (application as MyApplication).sharedDevicesViewModel
     }
+    private val bluetoothStateViewModel by lazy {
+        (application as MyApplication).bluetoothStateViewModel
+    }
     private var isFirstClick = true
     private lateinit var btReceiver: BtStateReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         forceAppTheme(isDark = false)
-        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        ActivityInfo.SCREEN_ORIENTATION_LOCKED
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         requestBluetoothPermissions()
@@ -70,6 +69,8 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
                 alpha = 1f
             }
         }
+        val restoredList = savedInstanceState?.getParcelableArrayList<BluetoothDoman>(CONNECTED_DEVICES_KEY)
+        _connectedDevices = restoredList?.toMutableList() ?: mutableListOf()
         initViews()
 
     }
@@ -82,11 +83,6 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
         binding.recyclerViewItemsConnectedOrSaved.adapter = adapterRecycl
         lifecycleScope.launch {
             adapterRecycl.submitList(_connectedDevices)
-        }
-        binding.imageStartServer.setOnClickListener {
-            setVibrate()
-            val intentthirdAct = Intent(this, ThirdActivity::class.java)
-            startActivity(intentthirdAct)
         }
         binding.buttonSend.setOnClickListener {
            setVibrate()
@@ -203,12 +199,7 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
         }
     }
 
-    override fun onBluetoothTurnedOff() {
-        _connectedDevices.clear()
-        sharedDevicesViewModel.updateDevices(_connectedDevices)
-        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-        startActivityForResult(enableBtIntent, 1)
-    }
+
 
 
 
@@ -241,6 +232,16 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
         layoutParams1.setMargins(marginHorizontal, 0, marginHorizontal, marginHorizontal)
         binding.buttonSend.layoutParams = layoutParams1
     }
+
+    override fun onSaveInstanceState(
+        outState: Bundle,
+    ) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelableArrayList(CONNECTED_DEVICES_KEY, ArrayList(_connectedDevices))
+    }
+
+
+
 
     private fun hasAllPermissions(): Boolean {
         val permissions = arrayOf(
@@ -279,9 +280,13 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
                 val enable_Bluetooth = Intent(
                     BluetoothAdapter.ACTION_REQUEST_ENABLE
                 )
+                    bluetoothStateViewModel.updateBtState(false)
+                    binding.imageStartServer.imageTintList = ColorStateList.valueOf(Color.RED)
                 startActivityForResult(enable_Bluetooth, 1)
                 }else{
-                initBtController()
+                    bluetoothStateViewModel.updateBtState(true)
+                    binding.imageStartServer.imageTintList = ColorStateList.valueOf(Color.GREEN)
+                    initBtController()
                 }
             } else {
                 Log.d("Bluetooth", "❌ Some permissions were not granted.")
@@ -318,10 +323,28 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
 
     }
 
-
+    override fun onBluetoothTurnedOff() {
+        bluetoothStateViewModel.updateBtState(false)
+        binding.imageStartServer.imageTintList = ColorStateList.valueOf(Color.RED)
+        _connectedDevices.clear()
+        GattServerManager.stopServer()
+        sharedDevicesViewModel.updateDevices(_connectedDevices)
+        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+        startActivityForResult(enableBtIntent, 1)
+    }
 
     override fun onBluetoothTurnedOn() {
+        bluetoothStateViewModel.updateBtState(true)
+        binding.imageStartServer.imageTintList = ColorStateList.valueOf(Color.GREEN)
         Log.d("BtState", "Bluetooth enabled")
+        GattServerManager.initialize(this)
+        val controller = GattServerManager.getController() ?: return
+        controller.setListener(this)
+
+        if (!controller.startServer()) {
+            Log.d("Gatt server", "Server is not started")
+            finish()
         }
+    }
 }
 

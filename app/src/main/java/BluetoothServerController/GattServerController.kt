@@ -165,6 +165,9 @@ class GattServerController(private val context: Context) {
         }
         return result
     }
+    fun bluetoothEnabled(): Boolean {
+        return  bluetoothAdapter.isEnabled
+    }
 
     fun notifyDevice(deviceAddress: String, data: ByteArray): Boolean {
         val device = connectedDevices[deviceAddress] ?: return false

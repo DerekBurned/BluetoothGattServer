@@ -3,6 +3,7 @@ package com.example.bluetoothgattserver.Secondactivity
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.content.Context
+import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -28,8 +29,9 @@ class AdapterSecondActvity(
     private val deviceTypes = listOf("Ciśnieniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
     private val connectedDevices = mutableMapOf<String, BluetoothDoman>()
     private val inputValuesMap = mutableMapOf<String, MutableList<String>>()
-
     private val expandedStates = mutableMapOf<String, Boolean>()
+
+    private val checkedStates = mutableMapOf<String, Boolean>()
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateConnectedDevices(devices: List<BluetoothDoman>) {
@@ -50,6 +52,30 @@ class AdapterSecondActvity(
         holder.bind(deviceName, connectedDevices[deviceName], onDeviceCheck)
     }
 
+    fun saveState(outState: Bundle) {
+        outState.putSerializable("INPUT_VALUES_MAP", HashMap(inputValuesMap))
+        outState.putSerializable("EXPANDED_STATES", HashMap(expandedStates))
+        outState.putSerializable("CHECKED_STATES", HashMap(checkedStates))
+
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun restoreState(savedInstanceState: Bundle?) {
+        savedInstanceState?.let {
+            (it.getSerializable("INPUT_VALUES_MAP") as? HashMap<String, MutableList<String>>)?.let {
+                inputValuesMap.clear()
+                inputValuesMap.putAll(it)
+            }
+            (it.getSerializable("EXPANDED_STATES") as? HashMap<String, Boolean>)?.let {
+                expandedStates.clear()
+                expandedStates.putAll(it)
+            }
+            (it.getSerializable("CHECKED_STATES") as? HashMap<String, Boolean>)?.let {
+                checkedStates.clear()
+                checkedStates.putAll(it)
+            }
+        }
+    }
     inner class DeviceViewHolderSecondActivity(private val binding: ActivitySendItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -61,7 +87,6 @@ class AdapterSecondActvity(
         ) {
             binding.linearLayoutDeviceParam.removeAllViews()
             binding.textViewItem.text = deviceName
-
             val isConnected = device != null
 
             when (deviceName) {
@@ -105,14 +130,16 @@ class AdapterSecondActvity(
                 expandedStates[deviceName] = newExpanded
             }
 
-            binding.checkboxDevice.setOnCheckedChangeListener(null)
-            binding.checkboxDevice.isChecked = false
+            binding.checkboxDevice.setOnCheckedChangeListener(null) // Prevent triggering on bind
+            binding.checkboxDevice.isChecked = checkedStates[deviceName] ?: false
             binding.checkboxDevice.setOnCheckedChangeListener { _, isChecked ->
+                checkedStates[deviceName] = isChecked
                 if (device != null) {
                     val combinedInputs = getCombinedInputs()
                     onDeviceCheck(device, combinedInputs, isChecked)
                 }
             }
+
         }
 
         private fun addNumberEditText(
@@ -230,6 +257,8 @@ class AdapterSecondActvity(
             }
             return inputs.joinToString(", ")
         }
+
+
 
         private fun animateView(view: View, index: Int) {
             val animation = AnimationUtils.loadAnimation(binding.root.context, R.anim.fade_slide_in)

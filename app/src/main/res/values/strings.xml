@@ -17,5 +17,6 @@
     <string name="error_empty">Nie może być puste</string>
     <string name="error_not_number">Musi być liczbą</string>
     <string name="error_range">Zakres:</string>
+    <string name="aboutTeam">About</string>
 
 </resources>

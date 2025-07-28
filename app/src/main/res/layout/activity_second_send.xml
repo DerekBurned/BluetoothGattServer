@@ -71,14 +71,14 @@
         android:id="@+id/animation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:lottie_autoPlay="false"
         app:lottie_cacheComposition="true"
-        android:clipChildren="false"
-        android:clipToPadding="false"
         app:lottie_clipToCompositionBounds="true"
         app:lottie_enableMergePathsForKitKatAndAbove="true"
         app:lottie_loop="false"
@@ -89,19 +89,34 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonSendInfo"
-        android:layout_width="match_parent"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:padding="10dp"
-        android:textSize="20sp"
-        android:text="@string/input_data_to_selected_button"
         android:background="@drawable/button_neon"
-        android:textColor="@color/white"
         android:backgroundTint="@null"
+        android:padding="10dp"
+        android:text="@string/input_data_to_selected_button"
+        android:textColor="@color/white"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        style="@style/Widget.AppCompat.Button" />
+        app:layout_constraintEnd_toStartOf="@+id/buttonAbout"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonAbout"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/button_neon"
+        android:backgroundTint="@null"
+        android:padding="10dp"
+        android:text="@string/aboutTeam"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

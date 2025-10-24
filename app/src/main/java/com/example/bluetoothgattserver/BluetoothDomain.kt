@@ -3,13 +3,13 @@ import android.bluetooth.BluetoothDevice
 import android.os.Parcel
 import android.os.Parcelable
 
-class BluetoothDoman(val name: String, val device: BluetoothDevice) : Parcelable {
+class BluetoothDomain(val name: String, val device: BluetoothDevice) : Parcelable {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as BluetoothDoman
+        other as BluetoothDomain
         return device.address == other.device.address
     }
 
@@ -24,15 +24,15 @@ class BluetoothDoman(val name: String, val device: BluetoothDevice) : Parcelable
         dest.writeParcelable(device, flags)
     }
 
-    companion object CREATOR : Parcelable.Creator<BluetoothDoman> {
-        override fun createFromParcel(parcel: Parcel): BluetoothDoman {
+    companion object CREATOR : Parcelable.Creator<BluetoothDomain> {
+        override fun createFromParcel(parcel: Parcel): BluetoothDomain {
             val name = parcel.readString() ?: ""
             val device = parcel.readParcelable<BluetoothDevice>(BluetoothDevice::class.java.classLoader)
                 ?: throw IllegalArgumentException("BluetoothDevice is missing")
-            return BluetoothDoman(name, device)
+            return BluetoothDomain(name, device)
         }
 
-        override fun newArray(size: Int): Array<BluetoothDoman?> {
+        override fun newArray(size: Int): Array<BluetoothDomain?> {
             return arrayOfNulls(size)
         }
     }

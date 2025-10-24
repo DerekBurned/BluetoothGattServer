@@ -4,33 +4,20 @@ import BluetoothServerController.GattServerController
 import BluetoothServerController.GattServerManager
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
-import android.view.Gravity
 import android.view.View
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.AnimationUtils
-import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.airbnb.lottie.RenderMode
-import com.example.bluetoothgattserver.BluetoothDoman
-import com.example.bluetoothgattserver.MainActivity
+import com.example.bluetoothgattserver.BluetoothDomain
 import com.example.bluetoothgattserver.MyApplication
 import com.example.bluetoothgattserver.R
 import com.example.bluetoothgattserver.ThirdActivity.ThirdActivity
@@ -47,7 +34,7 @@ class SecondActivitySend : AppCompatActivity() {
     private lateinit var adapterSecondActivity: AdapterSecondActvity
     private lateinit var binding: ActivitySecondSendBinding
     private lateinit var serverController: GattServerController
-    private val selectedDevices = mutableListOf<Pair<BluetoothDoman, String>>()
+    private val selectedDevices = mutableListOf<Pair<BluetoothDomain, String>>()
     private val customOrder = listOf("Ciśnieniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
     private var isFirstClick = true
 
@@ -82,9 +69,9 @@ class SecondActivitySend : AppCompatActivity() {
             }
         }
     }
-    fun List<BluetoothDoman>.filterAndSortByNames(
+    fun List<BluetoothDomain>.filterAndSortByNames(
         allowedNames: List<String>
-    ): List<BluetoothDoman> {
+    ): List<BluetoothDomain> {
         return this.filter { allowedNames.contains(it.name) }
             .sortedBy { allowedNames.indexOf(it.name) }
     }

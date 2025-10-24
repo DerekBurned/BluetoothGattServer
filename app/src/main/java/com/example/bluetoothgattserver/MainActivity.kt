@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
     private lateinit var adapterRecycl: ConnectedDevicesAdapter
     private val  bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private lateinit var binding: ActivityMainBinding
-    private var _connectedDevices = mutableListOf<BluetoothDoman>()
+    private var _connectedDevices = mutableListOf<BluetoothDomain>()
     private val PERMISSION_REQUEST_CODE = 123
     private val sharedDevicesViewModel by lazy {
         (application as MyApplication).sharedDevicesViewModel
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
                 alpha = 1f
             }
         }
-        val restoredList = savedInstanceState?.getParcelableArrayList<BluetoothDoman>(CONNECTED_DEVICES_KEY)
+        val restoredList = savedInstanceState?.getParcelableArrayList<BluetoothDomain>(CONNECTED_DEVICES_KEY)
         _connectedDevices = restoredList?.toMutableList() ?: mutableListOf()
         initViews()
 
@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
         runOnUiThread {
             if (_connectedDevices.none { it.device.address == device.address }) {
                 val displayName = "Device ${_connectedDevices.size + 1}"
-                _connectedDevices.add(BluetoothDoman(displayName, device))
+                _connectedDevices.add(BluetoothDomain(displayName, device))
                 sharedDevicesViewModel.updateDevices(_connectedDevices)
                 adapterRecycl.notifyItemInserted(_connectedDevices.size - 1)
             }
@@ -191,7 +191,7 @@ class MainActivity : AppCompatActivity(), GattServerListener, BluetoothStateList
             if (message.startsWith("Name:") && index != -1) {
                 val newName = message.removePrefix("Name:").trim()
                 if(!_connectedDevices.any { it.name == newName && it.device == device }) {
-                    _connectedDevices[index] = BluetoothDoman(newName, device)
+                    _connectedDevices[index] = BluetoothDomain(newName, device)
                     sharedDevicesViewModel.updateDevices(_connectedDevices)
                     adapterRecycl.notifyItemChanged(index)
                 }

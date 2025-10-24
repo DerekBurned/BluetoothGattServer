@@ -1,7 +1,6 @@
 package com.example.bluetoothgattserver.Secondactivity
 
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -18,23 +17,23 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bluetoothgattserver.BluetoothDoman
+import com.example.bluetoothgattserver.BluetoothDomain
 import com.example.bluetoothgattserver.R
 import com.example.bluetoothgattserver.databinding.ActivitySendItemBinding
 
 class AdapterSecondActvity(
-    private val onDeviceCheck: (BluetoothDoman?, String, Boolean) -> Unit
+    private val onDeviceCheck: (BluetoothDomain?, String, Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterSecondActvity.DeviceViewHolderSecondActivity>() {
 
     private val deviceTypes = listOf("Ciśnieniomierz", "Termometr", "Glukometr", "Pulsoksymetr")
-    private val connectedDevices = mutableMapOf<String, BluetoothDoman>()
+    private val connectedDevices = mutableMapOf<String, BluetoothDomain>()
     private val inputValuesMap = mutableMapOf<String, MutableList<String>>()
     private val expandedStates = mutableMapOf<String, Boolean>()
 
     private val checkedStates = mutableMapOf<String, Boolean>()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateConnectedDevices(devices: List<BluetoothDoman>) {
+    fun updateConnectedDevices(devices: List<BluetoothDomain>) {
         connectedDevices.clear()
         devices.forEach { connectedDevices[it.name] = it }
         notifyDataSetChanged()
@@ -82,8 +81,8 @@ class AdapterSecondActvity(
         @SuppressLint("MissingPermission", "ResourceAsColor")
         fun bind(
             deviceName: String,
-            device: BluetoothDoman?,
-            onDeviceCheck: (BluetoothDoman, String, Boolean) -> Unit
+            device: BluetoothDomain?,
+            onDeviceCheck: (BluetoothDomain, String, Boolean) -> Unit
         ) {
             binding.linearLayoutDeviceParam.removeAllViews()
             binding.textViewItem.text = deviceName
@@ -147,8 +146,8 @@ class AdapterSecondActvity(
             hint: String,
             index: Int,
             validRange: ClosedRange<Double>?,
-            device: BluetoothDoman?,
-            onDeviceCheck: (BluetoothDoman, String, Boolean) -> Unit
+            device: BluetoothDomain?,
+            onDeviceCheck: (BluetoothDomain, String, Boolean) -> Unit
         ) {
             val editText = EditText(binding.root.context).apply {
                 this.hint = hint

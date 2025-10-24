@@ -1,7 +1,6 @@
 package com.example.bluetoothgattserver
 
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothDevice
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -12,7 +11,7 @@ import com.example.bluetoothgattserver.databinding.DiscoveredDedviceItemBinding
 @SuppressLint("MissingPermission")
 class ConnectedDevicesAdapter()
 
-    : ListAdapter<BluetoothDoman, ConnectedDevicesAdapter.DeviceViewHolder>(
+    : ListAdapter<BluetoothDomain, ConnectedDevicesAdapter.DeviceViewHolder>(
     DeviceDiffCallback()
 ) {
 
@@ -30,19 +29,19 @@ class ConnectedDevicesAdapter()
     inner class DeviceViewHolder(private val binding: DiscoveredDedviceItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(device: BluetoothDoman) {
+        fun bind(device: BluetoothDomain) {
             binding.textViewNameFound.text = device.name
             binding.textViewMacFound.text = device.device.address
         }
     }
 
-    class DeviceDiffCallback : DiffUtil.ItemCallback<BluetoothDoman>() {
-        override fun areItemsTheSame(oldItem: BluetoothDoman, newItem: BluetoothDoman): Boolean {
+    class DeviceDiffCallback : DiffUtil.ItemCallback<BluetoothDomain>() {
+        override fun areItemsTheSame(oldItem: BluetoothDomain, newItem: BluetoothDomain): Boolean {
             return oldItem.device.address == newItem.device.address
         }
 
         @SuppressLint("DiffUtilEquals")
-        override fun areContentsTheSame(oldItem: BluetoothDoman, newItem: BluetoothDoman): Boolean {
+        override fun areContentsTheSame(oldItem: BluetoothDomain, newItem: BluetoothDomain): Boolean {
             return oldItem == newItem
         }
     }
